@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router';
+
 import {
   Card,
   CardContent,
@@ -9,8 +11,17 @@ import {
 import type { ProductDto } from '../api';
 
 function Product({ product }: { product: ProductDto }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/products/${product.id}`);
+  };
+
   return (
-    <Card className="border p-6 mb-2 rounded-sm shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between">
+    <Card
+      onClick={handleClick}
+      className="border p-6 mb-2 rounded-sm shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between"
+    >
       <CardHeader>
         <CardTitle>{product.title}</CardTitle>
         <CardDescription>{product.description}</CardDescription>

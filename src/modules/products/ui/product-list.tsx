@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import {
-  keepPreviousData,
-  // useInfiniteQuery,
-  useQuery,
-} from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { productListApi } from '../api';
 import { queryClient } from '@/shared/api/query-client';
@@ -33,27 +29,10 @@ function ProductList() {
     }
   };
 
-  // const {
-  //   isPending,
-  //   error,
-  //   data: products,
-  //   // isPlaceholderData,
-  //   fetchNextPage,
-  //   // hasNextPage,
-  //   // isFetchingNextPage,
-  // } = useInfiniteQuery({
-  //   ...productListApi.getTodoListInfinityQueryOptions(),
-  //   placeholderData: keepPreviousData,
-  // });
-
-  // const cursorRef = useIntersectionObserver(() => {
-  //   fetchNextPage();
-  // });
-
   if (isPending) return 'Loading...';
 
   if (error) return 'An error has occurred: ' + error.message;
-
+  throw new Error('An error has occurred');
   return (
     <div className="flex flex-col items-center gap-8">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
@@ -67,7 +46,6 @@ function ProductList() {
         totalItems={data.total}
         onHandleChangePage={handleChangePage}
       />
-      {/* <div ref={cursorRef} /> */}
     </div>
   );
 }
