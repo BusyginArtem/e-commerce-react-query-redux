@@ -1,8 +1,8 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import { z } from 'zod';
 import { jsonApiInstance } from '../../../shared/api/api-instance';
 
-export const PAGE_LIMIT = 10;
+export const PAGE_LIMIT = 12;
 
 export type PaginatedProductsResult = {
   products: ProductDto[];
@@ -80,27 +80,28 @@ export const productListApi = {
             signal: meta.signal,
           }
         ).then((data) => {
-          console.log(data);
           return PaginatedResultSchema.parse(data);
         }),
     });
   },
 
-  //   getTodoListInfinityQueryOptions: () => {
-  //     return infiniteQueryOptions({
-  //       queryKey: [todoListApi.baseKey, "list"],
-  //       queryFn: meta =>
-  //         jsonApiInstance<PaginatedResult<TodoDto>>(
-  //           `/tasks?_page=${meta.pageParam}&_per_page=10`,
-  //           {
-  //             signal: meta.signal
-  //           }
-  //         ),
-  //       initialPageParam: 1,
-  //       getNextPageParam: result => result.next,
-  //       select: result => result.pages.flatMap(page => page.data)
-  //     });
-  //   },
+  getTodoListInfinityQueryOptions: () => {
+    return infiniteQueryOptions({
+      queryKey: [productListApi.baseKey, 'list'],
+      queryFn: (meta) =>
+        jsonApiInstance<PaginatedProductsResult>(
+          `/products?limit=${PAGE_LIMIT}&skip=${meta.pageParam || 0}`,
+          {
+            signal: meta.signal,
+          }
+        ).then((data) => {
+          return PaginatedResultSchema.parse(data);
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (result) => result.skip + result.limit,
+      select: (result) => result.pages.flatMap((page) => page.products),
+    });
+  },
 
   //   createTodo: (data: TodoDto) => {
   //     return jsonApiInstance<TodoDto>(`/tasks`, {
