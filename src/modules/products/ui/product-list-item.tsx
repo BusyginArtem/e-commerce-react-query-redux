@@ -14,7 +14,10 @@ function Product({ product }: { product: ProductDto }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/products/${product.id}`);
+    navigate({
+      pathname: `/products/${product.id}`,
+      search: window.location.search,
+    });
   };
 
   return (

@@ -33,5 +33,5 @@ export const jsonApiInstance = async <T>(
     throw new ApiError(result);
   }
 
-  return result.json() as Promise<T>;
+  return (await result.json()) as Promise<T>;
 };

@@ -1,14 +1,23 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import { z } from 'zod';
 import { jsonApiInstance } from '../../../shared/api/api-instance';
+import { queryClient } from '@/shared/api/query-client';
 
-export const PAGE_LIMIT = 12;
+export const PAGE_LIMIT = 10;
 
 export type PaginatedProductsResult = {
   products: ProductDto[];
   total: number;
   skip: number;
   limit: number;
+};
+
+export type ProductReview = {
+  date: string;
+  rating: number;
+  comment: string;
+  reviewerEmail: string;
+  reviewerName: string;
 };
 
 export type ProductDto = {
@@ -22,13 +31,7 @@ export type ProductDto = {
   stock: number;
   images: string[];
   thumbnail: string;
-  reviews?: {
-    date: string;
-    rating: number;
-    comment: string;
-    reviewerEmail: string;
-    reviewerName: string;
-  }[];
+  reviews?: ProductReview[];
 };
 
 const ProductDtoSchema = z.object({
@@ -67,15 +70,17 @@ export const productListApi = {
   getPaginatedProductListQueryOptions: ({
     limit = PAGE_LIMIT,
     page = 1,
+    category = '',
   }: {
     limit?: number;
     page?: number;
+    category?: string;
   }) => {
     return queryOptions({
-      queryKey: [productListApi.baseKey, 'list', page],
+      queryKey: [productListApi.baseKey, 'list', page, category],
       queryFn: (meta) =>
         jsonApiInstance<PaginatedProductsResult>(
-          `/products?limit=${limit}&skip=${(page - 1) * limit}`,
+          `/products${category ? `/category/${category}` : ''}?limit=${limit}&skip=${(page - 1) * limit}`,
           {
             signal: meta.signal,
           }
@@ -100,6 +105,41 @@ export const productListApi = {
       initialPageParam: 1,
       getNextPageParam: (result) => result.skip + result.limit,
       select: (result) => result.pages.flatMap((page) => page.products),
+    });
+  },
+
+  getProductByIdQueryOptions: ({ id, page }: { id: number; page: number }) => {
+    return queryOptions({
+      queryKey: [productListApi.baseKey, 'entity', id],
+      queryFn: (meta) =>
+        jsonApiInstance<ProductDto>(`/products/${id}`, {
+          signal: meta.signal,
+        }).then((data) => {
+          return ProductDtoSchema.parse(data);
+        }),
+
+      initialData: () => {
+        const data = queryClient.getQueryData<PaginatedProductsResult>([
+          productListApi.baseKey,
+          'list',
+          page,
+        ]);
+
+        if (!data) return undefined;
+        return data?.products?.find((p) => p.id === Number(id));
+      },
+    });
+  },
+
+  getProductCategoriesQueryOptions: () => {
+    return queryOptions({
+      queryKey: [productListApi.baseKey, 'categories'],
+      queryFn: (meta) =>
+        jsonApiInstance<string[]>(`/products/category-list`, {
+          signal: meta.signal,
+        }).then((data) => {
+          return z.array(z.string()).parse(data);
+        }),
     });
   },
 
