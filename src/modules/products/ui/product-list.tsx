@@ -1,4 +1,3 @@
-import { useSearchParams } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { productListApi } from '../api';
@@ -7,46 +6,59 @@ import { queryClient } from '@/shared/api/query-client';
 import Pagination from './pagination';
 import Product from './product-list-item';
 import Filters from './filters';
+import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 
 function ProductList() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { getCurrentPage, getCurrentQuery, getCurrentCategory, setPage } =
+    useAppSearchParams();
 
-  const currentPage = searchParams.get('page')
-    ? Number(searchParams.get('page'))
-    : 1;
-
-  const category = searchParams.get('category') || '';
+  const query = getCurrentQuery();
+  const currentPage = getCurrentPage();
+  const category = getCurrentCategory();
 
   const { isPending, isError, data, isPlaceholderData } = useQuery({
     ...productListApi.getPaginatedProductListQueryOptions({
       page: currentPage,
       category,
+      query,
     }),
     placeholderData: keepPreviousData,
   });
 
   const handleChangePage = ({ page }: { page: number }) => {
-    if (!isPlaceholderData && page > currentPage) {
+    const { total, limit } = data || {
+      total: 0,
+      limit: 0,
+    };
+    const isPrefetchAllowed = total > (page + 1) * limit;
+
+    if (!isPlaceholderData && page > currentPage && isPrefetchAllowed) {
       queryClient.prefetchQuery({
         ...productListApi.getPaginatedProductListQueryOptions({
           page: page + 1,
           category,
+          query,
         }),
-        staleTime: 1000 * 60 * 10, // 10 minutes
+        staleTime: 1000 * 60 * 5, // 5 minutes
       });
     }
 
-    setSearchParams(
-      { page: String(page), ...Object.fromEntries(searchParams.entries()) },
-      {
-        replace: true,
-      }
-    );
+    setPage(page);
   };
 
-  if (isPending) return 'Loading...';
+  if (isPending)
+    return (
+      <div className="text-center text-gray-500 h-full flex items-center justify-center">
+        Loading...
+      </div>
+    );
 
-  if (isError) return 'An error has occurred!';
+  if (isError)
+    return (
+      <div className="text-center text-red-500 h-full flex items-center justify-center">
+        Error loading products.
+      </div>
+    );
 
   return (
     <div className="flex flex-col md:flex-row gap-12 relative">

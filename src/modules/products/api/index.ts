@@ -71,22 +71,39 @@ export const productListApi = {
     limit = PAGE_LIMIT,
     page = 1,
     category = '',
+    query = '',
   }: {
     limit?: number;
     page?: number;
     category?: string;
+    query?: string;
   }) => {
     return queryOptions({
-      queryKey: [productListApi.baseKey, 'list', page, category],
-      queryFn: (meta) =>
-        jsonApiInstance<PaginatedProductsResult>(
-          `/products${category ? `/category/${category}` : ''}?limit=${limit}&skip=${(page - 1) * limit}`,
+      queryKey: [
+        productListApi.baseKey,
+        'list',
+        page,
+        category ? category : '',
+        query ? query : '',
+      ],
+      queryFn: async (meta) => {
+        const params = new URLSearchParams();
+        params.set('limit', String(limit));
+        params.set('skip', String((page - 1) * limit));
+        if (query) params.set('q', query);
+
+        const url = `/products${category && !query ? `/category/${category}` : ''}${query && !category ? `/search` : ''}?${params.toString()}`;
+        console.log('%c url', 'color: green; font-weight: bold;', url);
+
+        const data = await jsonApiInstance<PaginatedProductsResult>(
+          // `/products${category ? `/category/${category}` : ''}${query ? `/search?q=${query}` : ''}?limit=${limit}&skip=${(page - 1) * limit}`,
+          url,
           {
             signal: meta.signal,
           }
-        ).then((data) => {
-          return PaginatedResultSchema.parse(data);
-        }),
+        );
+        return PaginatedResultSchema.parse(data);
+      },
     });
   },
 
@@ -140,6 +157,7 @@ export const productListApi = {
         }).then((data) => {
           return z.array(z.string()).parse(data);
         }),
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
     });
   },
 

@@ -10,7 +10,7 @@ import {
 
 import type { ProductDto } from '../api';
 
-function Product({ product }: { product: ProductDto }) {
+function ProductItem({ product }: { product: ProductDto }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -49,4 +49,4 @@ function Product({ product }: { product: ProductDto }) {
   );
 }
 
-export default Product;
+export default ProductItem;

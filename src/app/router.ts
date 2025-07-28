@@ -34,14 +34,21 @@ export const router = createBrowserRouter([
               // loadStore().then(() => {
               //   return null;
               // }),
+              console.log('------- loader products -------');
               const url = new URL(request.url);
               const page = Number(url.searchParams.get('page')) || 1;
-              const category = String(url.searchParams.get('category')) || '';
+              const category = url.searchParams.get('category')
+                ? String(url.searchParams.get('category'))
+                : '';
+              const query = url.searchParams.get('query')
+                ? String(url.searchParams.get('query'))
+                : '';
 
               queryClient.prefetchQuery({
                 ...productListApi.getPaginatedProductListQueryOptions({
                   page,
                   category,
+                  query,
                 }),
               });
 
