@@ -15,9 +15,9 @@ import {
   Lock,
   Eye,
   EyeOff,
-  AlertCircle,
+  // AlertCircle,
   CheckCircle,
-  Loader2,
+  // Loader2,
   ShoppingBag,
 } from 'lucide-react';
 
@@ -38,8 +38,8 @@ function SignIn() {
     password: '',
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [errors, setErrors] = useState<FormErrors>({});
+  // const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -60,7 +60,7 @@ function SignIn() {
       newErrors.password = 'Password must be at least 6 characters';
     }
 
-    setErrors(newErrors);
+    // setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -72,12 +72,12 @@ function SignIn() {
     }));
 
     // Clear errors when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
-    }
+    // if (errors[name as keyof FormErrors]) {
+    //   setErrors((prev) => ({
+    //     ...prev,
+    //     [name]: undefined,
+    //   }));
+    // }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,37 +87,37 @@ function SignIn() {
       return;
     }
 
-    setIsSubmitting(true);
-    setErrors({});
+    // setIsSubmitting(true);
+    // setErrors({});
 
-    try {
-      // Simulate API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Mock authentication logic
-          if (
-            formData.email === 'user@example.com' &&
-            formData.password === 'password'
-          ) {
-            resolve('success');
-          } else {
-            reject(new Error('Invalid credentials'));
-          }
-        }, 2000);
-      });
+    // try {
+    //   // Simulate API call
+    //   await new Promise((resolve, reject) => {
+    //     setTimeout(() => {
+    //       // Mock authentication logic
+    //       if (
+    //         formData.email === 'user@example.com' &&
+    //         formData.password === 'password'
+    //       ) {
+    //         resolve('success');
+    //       } else {
+    //         reject(new Error('Invalid credentials'));
+    //       }
+    //     }, 2000);
+    //   });
 
-      // Success - redirect or update state
-      console.log('Sign in successful');
-      // You would typically redirect here or update global auth state
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setErrors({
-          general: 'Invalid email or password. Please try again.',
-        });
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    //   // Success - redirect or update state
+    //   console.log('Sign in successful');
+    //   // You would typically redirect here or update global auth state
+    // } catch (error: unknown) {
+    //   if (error instanceof Error) {
+    //     setErrors({
+    //       general: 'Invalid email or password. Please try again.',
+    //     });
+    //   }
+    // } finally {
+    //   setIsSubmitting(false);
+    // }
   };
 
   const handleDemoLogin = () => {
@@ -125,7 +125,7 @@ function SignIn() {
       email: 'user@example.com',
       password: 'password',
     });
-    setErrors({});
+    // setErrors({});
   };
 
   return (
@@ -162,12 +162,12 @@ function SignIn() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {/* General Error */}
-              {errors.general && (
+              {/* {errors.general && (
                 <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
                   <span className="text-sm text-red-700">{errors.general}</span>
                 </div>
-              )}
+              )} */}
 
               {/* Demo Login Helper */}
               <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -207,19 +207,19 @@ function SignIn() {
                     autoComplete="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`
-                      w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors
-                      ${errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'}
-                    `}
+                    // className={`
+                    //   w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors
+                    //   ${3 > 2 ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'}
+                    // `}
                     placeholder="Enter your email"
                   />
                 </div>
-                {errors.email && (
+                {/* {errors.email && (
                   <p className="text-sm text-red-600 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {errors.email}
                   </p>
-                )}
+                )} */}
               </div>
 
               {/* Password Field */}
@@ -241,10 +241,10 @@ function SignIn() {
                     autoComplete="current-password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`
-                      w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors
-                      ${errors.password ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'}
-                    `}
+                    // className={`
+                    //   w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors
+                    //   ${3 > 2.password ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-gray-400'}
+                    // `}
                     placeholder="Enter your password"
                   />
                   <button
@@ -259,12 +259,12 @@ function SignIn() {
                     )}
                   </button>
                 </div>
-                {errors.password && (
+                {/* {errors.password && (
                   <p className="text-sm text-red-600 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {errors.password}
                   </p>
-                )}
+                )} */}
               </div>
 
               {/* Remember Me & Forgot Password */}
@@ -298,9 +298,9 @@ function SignIn() {
               <Button
                 type="submit"
                 className="w-full py-2.5"
-                disabled={isSubmitting}
+                // disabled={isSubmitting}
               >
-                {isSubmitting ? (
+                {/* {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Signing in...
@@ -310,7 +310,7 @@ function SignIn() {
                     <LogIn className="h-4 w-4 mr-2" />
                     Sign In
                   </>
-                )}
+                )} */}
               </Button>
 
               <div className="text-center text-sm text-gray-600">
