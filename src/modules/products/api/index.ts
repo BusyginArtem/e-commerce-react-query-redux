@@ -90,18 +90,13 @@ export const productListApi = {
         const params = new URLSearchParams();
         params.set('limit', String(limit));
         params.set('skip', String((page - 1) * limit));
-        if (query) params.set('q', query);
+        if (query && !category) params.set('q', query);
 
         const url = `/products${category && !query ? `/category/${category}` : ''}${query && !category ? `/search` : ''}?${params.toString()}`;
-        console.log('%c url', 'color: green; font-weight: bold;', url);
 
-        const data = await jsonApiInstance<PaginatedProductsResult>(
-          // `/products${category ? `/category/${category}` : ''}${query ? `/search?q=${query}` : ''}?limit=${limit}&skip=${(page - 1) * limit}`,
-          url,
-          {
-            signal: meta.signal,
-          }
-        );
+        const data = await jsonApiInstance<PaginatedProductsResult>(url, {
+          signal: meta.signal,
+        });
         return PaginatedResultSchema.parse(data);
       },
     });

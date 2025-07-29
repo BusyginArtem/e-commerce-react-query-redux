@@ -1,15 +1,15 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { Loader2, AlertCircle, Package } from 'lucide-react';
 
 import { productListApi } from '../api';
 import { queryClient } from '@/shared/api/query-client';
 
 import Pagination from './pagination';
-import Product from './product-list-item';
+import ProductGridItem from './product-grid-item';
 import Filters from './filters';
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
+import { Loader2, AlertCircle, Package } from 'lucide-react';
 
-function ProductList() {
+function ProductGridView() {
   const { getCurrentPage, getCurrentQuery, getCurrentCategory, setPage } =
     useAppSearchParams();
 
@@ -73,16 +73,19 @@ function ProductList() {
           </div>
         </div>
 
-        {/* Products Loading */}
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
-            <p className="text-lg text-gray-600 font-medium">
-              Loading products...
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              Please wait while we fetch the latest products
-            </p>
+        {/* Grid Loading Skeleton */}
+        <div className="flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -121,31 +124,6 @@ function ProductList() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Header Section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              {category
-                ? `${category.charAt(0).toUpperCase()}${category.slice(1)}`
-                : 'All Products'}
-              {query && (
-                <span className="text-blue-600"> matching "{query}"</span>
-              )}
-            </h2>
-            <p className="text-gray-600 mt-1">
-              {data?.total || 0} products found
-            </p>
-          </div>
-
-          {/* Results indicator */}
-          <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-            Page {currentPage} of{' '}
-            {Math.ceil((data?.total || 0) / (data?.limit || 10))}
-          </div>
-        </div>
-      </div>
-
       <div className="flex flex-col lg:flex-row gap-8 relative">
         {/* Filters Sidebar */}
         <div className="lg:w-80 flex-shrink-0">
@@ -163,15 +141,12 @@ function ProductList() {
             className={`transition-opacity duration-200 ${isPlaceholderData ? 'opacity-60' : 'opacity-100'}`}
           >
             {data?.products && data.products.length > 0 ? (
-              <div className="space-y-4 mb-8">
-                {data.products.map((product) => (
-                  <div
-                    key={product.id}
-                    className="transform transition-all duration-200 hover:scale-[1.01]"
-                  >
-                    <Product product={product} />
-                  </div>
-                ))}
+              <div className="mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {data.products.map((product) => (
+                    <ProductGridItem key={product.id} product={product} />
+                  ))}
+                </div>
               </div>
             ) : (
               /* Empty State */
@@ -188,7 +163,6 @@ function ProductList() {
                 {(query || category) && (
                   <button
                     onClick={() => {
-                      // Reset filters - you might want to use your existing filter reset logic
                       window.location.href = '/products';
                     }}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -226,4 +200,4 @@ function ProductList() {
   );
 }
 
-export default ProductList;
+export default ProductGridView;
