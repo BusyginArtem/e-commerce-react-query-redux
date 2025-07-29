@@ -75,7 +75,7 @@ function ProductGridView() {
 
         {/* Grid Loading Skeleton */}
         <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
@@ -124,6 +124,31 @@ function ProductGridView() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {category
+                ? `${category.charAt(0).toUpperCase()}${category.slice(1)}`
+                : 'All Products'}
+              {query && (
+                <span className="text-blue-600"> matching "{query}"</span>
+              )}
+            </h2>
+            <p className="text-gray-600 mt-1">
+              {data?.total || 0} products found
+            </p>
+          </div>
+
+          {/* Results indicator */}
+          <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+            Page {currentPage} of{' '}
+            {Math.ceil((data?.total || 0) / (data?.limit || 10))}
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-8 relative">
         {/* Filters Sidebar */}
         <div className="lg:w-80 flex-shrink-0">
@@ -142,7 +167,7 @@ function ProductGridView() {
           >
             {data?.products && data.products.length > 0 ? (
               <div className="mb-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {data.products.map((product) => (
                     <ProductGridItem key={product.id} product={product} />
                   ))}

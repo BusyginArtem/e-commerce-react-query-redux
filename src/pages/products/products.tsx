@@ -1,18 +1,12 @@
-import { Package, Grid, List, Search, Filter } from 'lucide-react';
+import { Package, Grid, List } from 'lucide-react';
 import { useState } from 'react';
 
-import ProductList from '../../modules/products/ui/product-list';
+import ProductList from '../../modules/products/ui/product-list-view';
 import ProductGridView from '../../modules/products/ui/product-grid-view';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent } from '@/shared/ui/card';
-import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 
 function Products() {
-  const { getCurrentQuery, getCurrentCategory } = useAppSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-
-  const query = getCurrentQuery();
-  const category = getCurrentCategory();
 
   return (
     <div className="space-y-6">
@@ -31,46 +25,6 @@ function Products() {
             your needs
           </p>
         </div>
-
-        {/* Active Filters Display */}
-        {(query || category) && (
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="py-4">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2 text-blue-700">
-                  <Filter className="h-4 w-4" />
-                  <span className="font-medium">Active filters:</span>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {category && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                      Category: <span className="capitalize">{category}</span>
-                    </span>
-                  )}
-
-                  {query && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                      <Search className="h-3 w-3" />
-                      Search: "{query}"
-                    </span>
-                  )}
-                </div>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    window.location.href = '/products';
-                  }}
-                  className="text-blue-600 hover:text-blue-700 ml-auto"
-                >
-                  Clear all filters
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* View Controls */}
         <div className="flex items-center justify-between bg-white rounded-lg border border-gray-200 p-4">

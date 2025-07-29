@@ -11,6 +11,18 @@ import {
 import { Button } from '@/shared/ui/button';
 
 import type { ProductDto } from '../api';
+import { cn } from '@/shared/utils/style-helpers';
+
+const renderStars = (rating: number) => {
+  return Array.from({ length: 5 }, (_, index) => (
+    <Star
+      key={index}
+      className={cn('h-4 w-4 text-gray-300', {
+        'text-yellow-400 fill-current': index < Math.floor(rating),
+      })}
+    />
+  ));
+};
 
 function ProductGridItem({ product }: { product: ProductDto }) {
   const navigate = useNavigate();
@@ -20,19 +32,6 @@ function ProductGridItem({ product }: { product: ProductDto }) {
       pathname: `/products/${product.id}`,
       search: window.location.search,
     });
-  };
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, index) => (
-      <Star
-        key={index}
-        className={`h-3 w-3 ${
-          index < Math.floor(rating)
-            ? 'text-yellow-400 fill-current'
-            : 'text-gray-300'
-        }`}
-      />
-    ));
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -48,7 +47,7 @@ function ProductGridItem({ product }: { product: ProductDto }) {
   };
 
   return (
-    <Card className="group cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1 relative overflow-hidden">
+    <Card className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.125 relative overflow-hidden">
       {/* Wishlist Button */}
       <Button
         variant="ghost"
