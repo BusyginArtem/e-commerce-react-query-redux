@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { jsonApiInstance } from '../../../shared/api/api-instance';
 import { queryClient } from '@/shared/api/query-client';
 
-export const PAGE_LIMIT = 10;
+export const PAGE_LIMIT = 12;
 
 export type PaginatedProductsResult = {
   products: ProductDto[];

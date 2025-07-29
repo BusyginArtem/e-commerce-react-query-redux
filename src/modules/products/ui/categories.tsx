@@ -26,7 +26,7 @@ export default function Categories() {
           className={cn(
             `px-4 py-2 rounded-full text-sm font-medium border transition hover:bg-gray-100 cursor-pointer`,
             {
-              'bg-blue-300 text-white border-blue-300 hover:bg-blue-400':
+              'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/25 ':
                 category === currentCategory,
             }
           )}
