@@ -155,22 +155,4 @@ export const productListApi = {
       staleTime: 1000 * 60 * 60 * 24, // 24 hours
     });
   },
-
-  //   createTodo: (data: TodoDto) => {
-  //     return jsonApiInstance<TodoDto>(`/tasks`, {
-  //       method: "POST",
-  //       json: data
-  //     });
-  //   },
-  //   updateTodo: (data: Partial<TodoDto> & { id: string }) => {
-  //     return jsonApiInstance<TodoDto>(`/tasks/${data.id}`, {
-  //       method: "PATCH",
-  //       json: data
-  //     });
-  //   },
-  //   deleteTodo: (id: string) => {
-  //     return jsonApiInstance(`/tasks/${id}`, {
-  //       method: "DELETE"
-  //     });
-  //   }
 };

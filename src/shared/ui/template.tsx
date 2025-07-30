@@ -1,10 +1,13 @@
 import { Link, Outlet, useLocation } from 'react-router';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
+
 import { cn } from '../utils/style-helpers';
 import { ShoppingBag, Package, ShoppingCart, LogIn } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
 
 function Template() {
   const { pathname } = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Change to false to see sign-in state
 
   const navItems = [
     {
@@ -18,14 +21,14 @@ function Template() {
       label: 'Cart',
       icon: ShoppingCart,
       isActive: pathname.startsWith('/cart'),
-    },
-    {
-      to: '/sign-in',
-      label: 'Sign In',
-      icon: LogIn,
-      isActive: pathname.startsWith('/sign-in'),
+      badge: 3, // Cart item count
     },
   ];
+
+  const handleSignOut = () => {
+    setIsAuthenticated(false);
+    // Add your sign out logic here
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -51,7 +54,7 @@ function Template() {
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors',
+                      'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors relative',
                       item.isActive
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-600 hover:text-blue-600 hover:bg-gray-100'
@@ -59,9 +62,50 @@ function Template() {
                   >
                     <Icon className="h-4 w-4" />
                     <span className="hidden sm:inline">{item.label}</span>
+                    {item.badge && (
+                      <span
+                        className={cn(
+                          'absolute -top-1 -right-1 h-5 w-5 rounded-full text-xs font-bold flex items-center justify-center',
+                          item.isActive
+                            ? 'bg-white text-blue-600'
+                            : 'bg-blue-600 text-white'
+                        )}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
+
+              {/* Authentication Section */}
+              {isAuthenticated ? (
+                <div className="ml-4 w-8 h-8">
+                  <Avatar onClick={handleSignOut}>
+                    <AvatarImage
+                      className="rounded-3xl w-8 h-8"
+                      width={32}
+                      height={32}
+                      src="https://github.com/shadcn.png"
+                      alt="User Avatar"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </div>
+              ) : (
+                <Link
+                  to="/sign-in"
+                  className={cn(
+                    'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ml-4',
+                    pathname.startsWith('/sign-in')
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-gray-100'
+                  )}
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span className="hidden sm:inline">Sign In</span>
+                </Link>
+              )}
             </nav>
           </div>
         </div>

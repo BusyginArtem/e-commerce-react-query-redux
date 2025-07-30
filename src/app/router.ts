@@ -14,6 +14,12 @@ export const router = createBrowserRouter([
   {
     path: '/',
     Component: Template,
+    loader: async () => {
+      // await loadStore();
+      // queryClient.prefetchQuery({
+      //   ...productListApi.getProductCategoriesQueryOptions(),
+      // });
+    },
     children: [
       {
         index: true,
