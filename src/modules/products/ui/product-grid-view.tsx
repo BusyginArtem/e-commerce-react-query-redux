@@ -49,7 +49,20 @@ function ProductGridView() {
 
   if (isPending) {
     return (
-      <div className="flex flex-col lg:flex-row gap-8 min-h-[60vh]">
+      <div className="flex flex-col lg:flex-col gap-8 min-h-[60vh] max-w-7xl mx-auto">
+        <div className="mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">All Products</h2>
+              <p className="text-gray-600 mt-1">0 products found</p>
+            </div>
+
+            {/* Results indicator */}
+            <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              Page 1 of 1
+            </div>
+          </div>
+        </div>
         {/* Filters Skeleton */}
         <div className="lg:w-80 flex-shrink-0">
           <div className="sticky top-8">
@@ -58,12 +71,11 @@ function ProductGridView() {
               <div className="space-y-4">
                 <div className="h-10 bg-gray-200 rounded"></div>
                 <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-20"></div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-col gap-2">
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="h-8 bg-gray-200 rounded-full w-16"
+                        className="h-8 bg-gray-200 rounded-full w-full"
                       ></div>
                     ))}
                   </div>
@@ -73,19 +85,16 @@ function ProductGridView() {
           </div>
         </div>
 
-        {/* Grid Loading Skeleton */}
-        <div className="flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
-                <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-5 bg-gray-200 rounded w-1/3"></div>
-                </div>
-              </div>
-            ))}
+        {/* Products Loading */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
+            <p className="text-lg text-gray-600 font-medium">
+              Loading products...
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Please wait while we fetch the latest products
+            </p>
           </div>
         </div>
       </div>

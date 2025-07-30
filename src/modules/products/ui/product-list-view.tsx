@@ -49,7 +49,20 @@ function ProductList() {
 
   if (isPending) {
     return (
-      <div className="flex flex-col lg:flex-row gap-8 min-h-[60vh]">
+      <div className="flex flex-col lg:flex-col gap-8 min-h-[60vh] max-w-7xl mx-auto">
+        <div className="mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">All Products</h2>
+              <p className="text-gray-600 mt-1">0 products found</p>
+            </div>
+
+            {/* Results indicator */}
+            <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              Page 1 of 1
+            </div>
+          </div>
+        </div>
         {/* Filters Skeleton */}
         <div className="lg:w-80 flex-shrink-0">
           <div className="sticky top-8">
@@ -58,12 +71,11 @@ function ProductList() {
               <div className="space-y-4">
                 <div className="h-10 bg-gray-200 rounded"></div>
                 <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-20"></div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-col gap-2">
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="h-8 bg-gray-200 rounded-full w-16"
+                        className="h-8 bg-gray-200 rounded-full w-full"
                       ></div>
                     ))}
                   </div>
