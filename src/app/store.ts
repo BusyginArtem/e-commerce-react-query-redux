@@ -6,7 +6,8 @@ import {
 } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import type { UserIdentifier } from '@/modules/auth/api';
+
+import { getUserIdFromStorage } from '@/shared/utils/getUserIdFromStorage';
 
 export const rootReducer = combineSlices();
 
@@ -27,8 +28,7 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== 'production',
   preloadedState: {
     auth: {
-      userId:
-        (Number(localStorage.getItem('userId')) as UserIdentifier) || undefined,
+      userId: getUserIdFromStorage(),
     },
   },
 });

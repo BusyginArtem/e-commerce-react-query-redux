@@ -62,11 +62,9 @@ function SignIn() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formDataToSubmit = new FormData(e.currentTarget);
-
     const data = FormSchema.safeParse({
-      username: formDataToSubmit.get('username'),
-      password: formDataToSubmit.get('password'),
+      username: formData.username,
+      password: formData.password,
     });
 
     if (!data.success) {
@@ -77,11 +75,14 @@ function SignIn() {
 
       data.error.issues.forEach((issue) => {
         const key = issue.path[0];
+
         if (key === 'username' || key === 'password') {
           fieldErrors[key] = issue.message;
         }
       });
+
       setErrors(fieldErrors);
+
       return;
     }
 
@@ -97,10 +98,14 @@ function SignIn() {
 
   const handleDemoLogin = () => {
     // Set demo credentials
-    const demoUsername = 'emilys';
-    const demoPassword = 'emilyspass';
+    const demoUsername = 'ariam';
+    const demoPassword = 'ariampass';
 
-    // Dispatch the login thunk with demo credentials
+    setFormData({
+      username: demoUsername,
+      password: demoPassword,
+    });
+
     dispatch(loginThunk(demoUsername, demoPassword));
   };
 
@@ -160,7 +165,7 @@ function SignIn() {
                 <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0" />
                 <div className="flex-1">
                   <span className="text-sm text-blue-700">
-                    Demo: emilys / emilyspass
+                    Demo: ariam / ariampass
                   </span>
                 </div>
                 <Button
