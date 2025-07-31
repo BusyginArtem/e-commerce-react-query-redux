@@ -1,13 +1,21 @@
 import { Link, Outlet, useLocation } from 'react-router';
-import { Suspense, useState } from 'react';
+import { Suspense } from 'react';
 
 import { cn } from '../utils/style-helpers';
 import { ShoppingBag, Package, ShoppingCart, LogIn } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
+import { useUserData } from '../hooks/useUserData';
+import { Button } from './button';
+import { useAppDispatch } from '@/app/store';
+import { logoutThunk } from '@/modules/auth/thunks/logout';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 function Template() {
   const { pathname } = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Change to false to see sign-in state
+
+  const { data: user } = useUserData();
+
+  const dispatch = useAppDispatch();
 
   const navItems = [
     {
@@ -26,8 +34,7 @@ function Template() {
   ];
 
   const handleSignOut = () => {
-    setIsAuthenticated(false);
-    // Add your sign out logic here
+    dispatch(logoutThunk({ userId: user?.id }));
   };
 
   return (
@@ -46,7 +53,7 @@ function Template() {
             </Link>
 
             {/* Navigation */}
-            <nav className="flex items-center space-x-1">
+            <nav className="flex items-center space-x-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -79,19 +86,37 @@ function Template() {
               })}
 
               {/* Authentication Section */}
-              {isAuthenticated ? (
-                <div className="ml-4 w-8 h-8">
-                  <Avatar onClick={handleSignOut}>
-                    <AvatarImage
-                      className="rounded-3xl w-8 h-8"
-                      width={32}
-                      height={32}
-                      src="https://github.com/shadcn.png"
-                      alt="User Avatar"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </div>
+              {user?.id ? (
+                <>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="destructive"
+                    className="ml-4 cursor-pointer"
+                  >
+                    Sign Out
+                  </Button>
+
+                  <div className="ml-4 w-8 h-8">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={user?.image}
+                            alt={user?.username}
+                            className="object-cover"
+                          />
+                          <AvatarFallback className="bg-gray-400">
+                            {user?.username?.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </PopoverTrigger>
+
+                      <PopoverContent>
+                        <p className="font-medium">{user?.username}</p>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </>
               ) : (
                 <Link
                   to="/sign-in"
