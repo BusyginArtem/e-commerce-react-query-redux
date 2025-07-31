@@ -2,7 +2,7 @@ import { queryOptions } from '@tanstack/react-query';
 import { z } from 'zod';
 
 import { jsonApiInstance } from '../../../shared/api/api-instance';
-import type { Brand } from '@/shared/defenitions';
+import type { Brand } from '@/shared/definitions';
 
 export type UserIdentifier = Brand<number, 'USER_IDENTIFIER'>;
 
@@ -19,13 +19,13 @@ export type UserDto = {
   profileLink?: string;
 };
 
-const UserIdentifierSchema = z.preprocess(
-  (val) => Number(val),
-  z.number()
-) as unknown as z.ZodType<UserIdentifier>;
+// const UserIdentifierSchema = z.preprocess(
+//   (val) => Number(val),
+//   z.number()
+// ) as unknown as z.ZodType<UserIdentifier>;
 
 export const UserDtoSchema = z.object({
-  id: UserIdentifierSchema,
+  id: z.number().transform((val): UserIdentifier => val as UserIdentifier),
   username: z.string(),
   email: z.email(),
   firstName: z.string(),

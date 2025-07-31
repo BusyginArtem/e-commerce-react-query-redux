@@ -107,26 +107,24 @@ export const router = createBrowserRouter([
           };
         },
       },
-      {
-        path: 'sign-in',
-        lazy: async () => {
-          const module = await import('../pages/sign-in');
-          return {
-            Component: module.default,
-            // loader: ({ params, request }) => {
-            // const url = new URL(request.url);
-            // const page = Number(url.searchParams.get('page')) || 1;
-
-            // queryClient.prefetchQuery({
-            //   ...productListApi.getProductByIdQueryOptions({
-            //     id: Number(params.id),
-            //     page,
-            //   }),
-            // });
-            // },
-          };
-        },
-      },
     ],
+  },
+  {
+    path: 'sign-in',
+    lazy: async () => {
+      const module = await import('../pages/sign-in');
+      return {
+        Component: module.default,
+      };
+    },
+  },
+  {
+    path: '*',
+    lazy: async () => {
+      const module = await import('../pages/not-found');
+      return {
+        Component: module.default,
+      };
+    },
   },
 ]);

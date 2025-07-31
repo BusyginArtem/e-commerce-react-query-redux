@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import z from 'zod';
-import React, { useState } from 'react';
-import { Link } from 'react-router';
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ import { loginThunk, useLoginLoading } from '@/modules/auth/thunks/login';
 import { Input } from '@/shared/ui/input';
 import { authSlice } from '@/modules/auth/features/auth.slice';
 import { cn } from '@/shared/utils/style-helpers';
+import { useUserData } from '@/shared/hooks/useUserData';
 
 const FormSchema = z.object({
   username: z.string().min(3, {
@@ -46,9 +47,17 @@ function SignIn() {
   });
 
   const dispatch = useAppDispatch();
-
   const isSubmitting = useLoginLoading();
   const loginError = useAppSelector(authSlice.selectors.selectError);
+
+  const navigate = useNavigate();
+  const { data: user } = useUserData();
+
+  useEffect(() => {
+    if (user?.id) {
+      navigate('/');
+    }
+  }, [navigate, user?.id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -120,7 +129,9 @@ function SignIn() {
             <div className="p-3 bg-blue-600 rounded-full">
               <ShoppingBag className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">My Store</h1>
+            <Link to="/">
+              <h1 className="text-3xl font-bold text-gray-900">My Store</h1>
+            </Link>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome back
