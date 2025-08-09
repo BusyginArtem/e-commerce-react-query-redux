@@ -21,15 +21,20 @@ export const useAppSearchParams = () => {
   };
 
   const setSearchQuery = (query: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { page, category, ...restSearchParams } = Object.fromEntries(
-      searchParams.entries()
-    );
+    const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      page,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      category,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      query: prevQuery,
+      ...restSearchParams
+    } = Object.fromEntries(searchParams.entries());
 
     setSearchParams(
       {
         ...restSearchParams,
-        query: query ? query : '',
+        ...(query ? { query } : {}),
         page: String(1),
       },
       {

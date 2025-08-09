@@ -100,7 +100,7 @@ export default function Categories() {
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 overflow-y-auto overscroll-y-contain h-[calc(100vh-32rem)]">
       {categories?.map((category) => {
         const Icon = getCategoryIcon(category);
         const isActive = category === currentCategory;

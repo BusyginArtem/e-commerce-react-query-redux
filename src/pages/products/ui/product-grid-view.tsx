@@ -10,8 +10,14 @@ import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 import { Loader2, AlertCircle, Package } from 'lucide-react';
 
 function ProductGridView() {
-  const { getCurrentPage, getCurrentQuery, getCurrentCategory, setPage } =
-    useAppSearchParams();
+  const {
+    getCurrentPage,
+    getCurrentQuery,
+    getCurrentCategory,
+    setPage,
+    setEmptyCategory,
+    setSearchQuery,
+  } = useAppSearchParams();
 
   const query = getCurrentQuery();
   const currentPage = getCurrentPage();
@@ -87,7 +93,7 @@ function ProductGridView() {
 
         {/* Products Loading */}
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
+          <div className="text-center translate-x-3/4">
             <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
             <p className="text-lg text-gray-600 font-medium">
               Loading products...
@@ -95,36 +101,6 @@ function ProductGridView() {
             <p className="text-sm text-gray-500 mt-1">
               Please wait while we fetch the latest products
             </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex flex-col lg:flex-row gap-8 min-h-[60vh]">
-        <div className="lg:w-80 flex-shrink-0">
-          <div className="sticky top-8">
-            <Filters />
-          </div>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center p-8 bg-red-50 rounded-xl border border-red-200">
-            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-red-800 mb-2">
-              Oops! Something went wrong
-            </h3>
-            <p className="text-red-600 mb-4">
-              We couldn't load the products. Please try again.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Try Again
-            </button>
           </div>
         </div>
       </div>
@@ -161,7 +137,7 @@ function ProductGridView() {
       <div className="flex flex-col lg:flex-row gap-8 relative">
         {/* Filters Sidebar */}
         <div className="lg:w-80 flex-shrink-0">
-          <div className="sticky top-8">
+          <div className="sticky top-20">
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               <Filters />
             </div>
@@ -182,6 +158,24 @@ function ProductGridView() {
                   ))}
                 </div>
               </div>
+            ) : isError ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center p-8 bg-red-50 rounded-xl border border-red-200">
+                  <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-red-800 mb-2">
+                    Oops! Something went wrong
+                  </h3>
+                  <p className="text-red-600 mb-4">
+                    We couldn't load the products. Please try again.
+                  </p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </div>
             ) : (
               /* Empty State */
               <div className="text-center py-16">
@@ -197,7 +191,9 @@ function ProductGridView() {
                 {(query || category) && (
                   <button
                     onClick={() => {
-                      window.location.href = '/products';
+                      setPage(1);
+                      setEmptyCategory();
+                      setSearchQuery('');
                     }}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
