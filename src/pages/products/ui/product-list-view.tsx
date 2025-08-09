@@ -8,10 +8,17 @@ import Pagination from './pagination';
 import Product from './product-list-item';
 import Filters from './filters';
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
+import { cn } from '@/shared/utils/style-helpers';
 
 function ProductList() {
-  const { getCurrentPage, getCurrentQuery, getCurrentCategory, setPage } =
-    useAppSearchParams();
+  const {
+    getCurrentPage,
+    getCurrentQuery,
+    getCurrentCategory,
+    setPage,
+    setEmptyCategory,
+    setSearchQuery,
+  } = useAppSearchParams();
 
   const query = getCurrentQuery();
   const currentPage = getCurrentPage();
@@ -87,7 +94,7 @@ function ProductList() {
 
         {/* Products Loading */}
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
+          <div className="text-center transform translate-x-3/4">
             <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
             <p className="text-lg text-gray-600 font-medium">
               Loading products...
@@ -95,36 +102,6 @@ function ProductList() {
             <p className="text-sm text-gray-500 mt-1">
               Please wait while we fetch the latest products
             </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex flex-col lg:flex-row gap-8 min-h-[60vh]">
-        <div className="lg:w-80 flex-shrink-0">
-          <div className="sticky top-8">
-            <Filters />
-          </div>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center p-8 bg-red-50 rounded-xl border border-red-200">
-            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-red-800 mb-2">
-              Oops! Something went wrong
-            </h3>
-            <p className="text-red-600 mb-4">
-              We couldn't load the products. Please try again.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Try Again
-            </button>
           </div>
         </div>
       </div>
@@ -161,7 +138,7 @@ function ProductList() {
       <div className="flex flex-col lg:flex-row gap-8 relative">
         {/* Filters Sidebar */}
         <div className="lg:w-80 flex-shrink-0">
-          <div className="sticky top-8">
+          <div className="sticky top-20 ">
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               <Filters />
             </div>
@@ -172,7 +149,12 @@ function ProductList() {
         <div className="flex-1 min-w-0">
           {/* Products Grid */}
           <div
-            className={`transition-opacity duration-200 ${isPlaceholderData ? 'opacity-60' : 'opacity-100'}`}
+            className={cn(
+              'transition-opacity duration-200 overscroll-y-contain opacity-100',
+              {
+                'opacity-60': isPlaceholderData,
+              }
+            )}
           >
             {data?.products && data.products.length > 0 ? (
               <div className="space-y-4 mb-8">
@@ -185,9 +167,27 @@ function ProductList() {
                   </div>
                 ))}
               </div>
+            ) : isError ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center p-8 bg-red-50 rounded-xl border border-red-200">
+                  <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-red-800 mb-2">
+                    Oops! Something went wrong
+                  </h3>
+                  <p className="text-red-600 mb-4">
+                    We couldn't load the products. Please try again.
+                  </p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </div>
             ) : (
               /* Empty State */
-              <div className="text-center py-16">
+              <div className="text-center py-16 ">
                 <Package className="h-24 w-24 text-gray-300 mx-auto mb-6" />
                 <h3 className="text-2xl font-semibold text-gray-700 mb-3">
                   No products found
@@ -200,8 +200,9 @@ function ProductList() {
                 {(query || category) && (
                   <button
                     onClick={() => {
-                      // Reset filters - you might want to use your existing filter reset logic
-                      window.location.href = '/products';
+                      setPage(1);
+                      setEmptyCategory();
+                      setSearchQuery('');
                     }}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >

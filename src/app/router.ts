@@ -1,24 +1,21 @@
-import { createBrowserRouter } from 'react-router';
-// import { store } from "./store";
+import { createBrowserRouter, redirect } from 'react-router';
 
 import Template from '../shared/ui/template';
 import { queryClient } from '@/shared/api/query-client';
 import { productListApi } from '@/modules/products/api';
-
-// const loadStore = () =>
-//   new Promise((resolve) => {
-//     setTimeout(() => resolve(1), 0);
-//   });
+import {
+  getCurrentUserId,
+  prefetchUserData,
+} from '@/shared/utils/prefetch-utils';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     Component: Template,
     loader: async () => {
-      // await loadStore();
-      // queryClient.prefetchQuery({
-      //   ...productListApi.getProductCategoriesQueryOptions(),
-      // });
+      await prefetchUserData();
+
+      return null;
     },
     children: [
       {
@@ -37,10 +34,6 @@ export const router = createBrowserRouter([
           return {
             Component: module.default,
             loader: ({ request }) => {
-              // loadStore().then(() => {
-              //   return null;
-              // }),
-
               const url = new URL(request.url);
               const page = url.searchParams.get('page')
                 ? Number(url.searchParams.get('page'))
@@ -63,6 +56,8 @@ export const router = createBrowserRouter([
               queryClient.prefetchQuery({
                 ...productListApi.getProductCategoriesQueryOptions(),
               });
+
+              return null;
             },
           };
         },
@@ -83,6 +78,8 @@ export const router = createBrowserRouter([
                   page,
                 }),
               });
+
+              return null;
             },
           };
         },
@@ -93,17 +90,20 @@ export const router = createBrowserRouter([
           const module = await import('../pages/cart');
           return {
             Component: module.default,
-            // loader: ({ params, request }) => {
-            // const url = new URL(request.url);
-            // const page = Number(url.searchParams.get('page')) || 1;
+            loader: async () => {
+              // Check if user is authenticated
+              const userId = getCurrentUserId();
 
-            // queryClient.prefetchQuery({
-            //   ...productListApi.getProductByIdQueryOptions({
-            //     id: Number(params.id),
-            //     page,
-            //   }),
-            // });
-            // },
+              if (!userId) {
+                // Redirect to sign-in if not authenticated
+                throw redirect('/sign-in');
+              }
+
+              // Prefetch both user and cart data
+              await prefetchUserData();
+
+              return null;
+            },
           };
         },
       },

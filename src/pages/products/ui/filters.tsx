@@ -1,11 +1,11 @@
 import { useRef } from 'react';
-import { Search, X, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 import Categories from './categories';
-import { useState } from 'react';
 import { cn } from '@/shared/utils/style-helpers';
 import { Button } from '@/shared/ui/button';
+import SearchInput from './search-input';
 
 function Filters() {
   const {
@@ -17,13 +17,10 @@ function Filters() {
   const query = getCurrentQuery();
   const category = getCurrentCategory();
 
-  const [searchValue, setSearchValue] = useState(query || '');
-
   const intervalId = useRef<NodeJS.Timeout | null>(null);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value.trim();
-    setSearchValue(query);
+  const handleSearchChange = (query: string) => {
+    // setSearchValue(query);
 
     if (intervalId.current) {
       clearTimeout(intervalId.current);
@@ -37,16 +34,16 @@ function Filters() {
 
   const handleSetEmptyCategory = () => {
     setEmptyCategory();
-    setSearchValue('');
+    // setSearchValue('');
   };
 
   const clearSearch = () => {
-    setSearchValue('');
+    // setSearchValue('');
     setSearchQuery('');
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 h-[calc(100vh-9rem)] ">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-2 bg-blue-100 rounded-lg">
@@ -68,43 +65,12 @@ function Filters() {
       </div>
 
       {/* Search Section */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800 mb-3">
-          Search Products
-        </label>
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-          </div>
-          <input
-            type="text"
-            className={cn(
-              'w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500',
-              'placeholder:text-gray-400 text-gray-900 font-medium',
-              'transition-all duration-200 hover:border-gray-300',
-              'bg-white shadow-sm'
-            )}
-            placeholder="Search for products..."
-            onChange={handleSearchChange}
-            value={searchValue}
-          />
-          {searchValue && (
-            <button
-              onClick={clearSearch}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-              type="button"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-        {searchValue && (
-          <p className="text-xs text-blue-600 font-medium">
-            Searching for "{searchValue}"
-          </p>
-        )}
-      </div>
+      <SearchInput
+        label="Search Products"
+        initValue={query}
+        onSearchChange={handleSearchChange}
+        onClearSearch={clearSearch}
+      />
 
       {/* Categories Section */}
       <div className="space-y-4">
@@ -143,9 +109,9 @@ function Filters() {
         <div className="text-xs text-gray-500 space-y-1">
           <p className="font-medium">Active Filters:</p>
           <div className="flex flex-wrap gap-1">
-            {searchValue && (
+            {query && (
               <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs">
-                Search: {searchValue}
+                Search: {query}
               </span>
             )}
             {category && (
@@ -153,7 +119,7 @@ function Filters() {
                 {category}
               </span>
             )}
-            {!searchValue && !category && (
+            {!query && !category && (
               <span className="text-gray-400 italic">None</span>
             )}
           </div>

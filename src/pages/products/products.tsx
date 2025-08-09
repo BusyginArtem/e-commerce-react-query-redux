@@ -1,8 +1,8 @@
 import { Package, Grid, List } from 'lucide-react';
 import { useState } from 'react';
 
-import ProductList from '../../modules/products/ui/product-list-view';
-import ProductGridView from '../../modules/products/ui/product-grid-view';
+import ProductList from './ui/product-list-view';
+import ProductGridView from './ui/product-grid-view';
 import { Button } from '@/shared/ui/button';
 
 function Products() {

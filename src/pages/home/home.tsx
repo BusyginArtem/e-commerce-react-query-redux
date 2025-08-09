@@ -102,14 +102,16 @@ function Home() {
                   Shop Now
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white text-white hover:bg-white/10 font-semibold px-8 py-4 text-lg"
-              >
-                Learn More
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
+              <Link to="/products">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="border-white text-white hover:bg-white/10 font-semibold px-8 py-4 text-lg"
+                >
+                  Learn More
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

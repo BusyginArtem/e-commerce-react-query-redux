@@ -70,8 +70,8 @@ export const productListApi = {
   getPaginatedProductListQueryOptions: ({
     limit = PAGE_LIMIT,
     page = 1,
-    category = '',
-    query = '',
+    category = undefined,
+    query = undefined,
   }: {
     limit?: number;
     page?: number;
@@ -83,8 +83,10 @@ export const productListApi = {
         productListApi.baseKey,
         'list',
         page,
-        category ? category : '',
-        query ? query : '',
+        {
+          category,
+          query,
+        },
       ],
       queryFn: async (meta) => {
         const params = new URLSearchParams();
