@@ -1,14 +1,14 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Loader2, AlertCircle, Package } from 'lucide-react';
 
-import { productListApi } from '../api';
-import { queryClient } from '@/shared/api/query-client';
-
-import Pagination from './pagination';
 import Product from './product-list-item';
 import Filters from './filters';
+import PagePagination from '@/shared/ui/page-pagination';
+import { Button } from '@/shared/ui/button';
+
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 import { cn } from '@/shared/utils/style-helpers';
+import { PAGE_LIMIT } from '@/modules/products/api';
+import { useProducts } from '@/modules/products/hooks/useProducts';
 
 function ProductList() {
   const {
@@ -16,44 +16,30 @@ function ProductList() {
     getCurrentQuery,
     getCurrentCategory,
     setPage,
-    setEmptyCategory,
-    setSearchQuery,
+    clearSearchParams,
   } = useAppSearchParams();
 
   const query = getCurrentQuery();
   const currentPage = getCurrentPage();
   const category = getCurrentCategory();
 
-  const { isPending, isError, data, isPlaceholderData } = useQuery({
-    ...productListApi.getPaginatedProductListQueryOptions({
-      page: currentPage,
-      category,
-      query,
-    }),
-    placeholderData: keepPreviousData,
-  });
+  const {
+    isPending,
+    isError,
+    products,
+    total,
+    limit,
+    isPlaceholderData,
+    prefetchProducts,
+  } = useProducts();
 
   const handleChangePage = ({ page }: { page: number }) => {
-    const { total, limit } = data || {
-      total: 0,
-      limit: 0,
-    };
-    const isPrefetchAllowed = total > (page + 1) * limit;
-
-    if (!isPlaceholderData && page > currentPage && isPrefetchAllowed) {
-      queryClient.prefetchQuery({
-        ...productListApi.getPaginatedProductListQueryOptions({
-          page: page + 1,
-          category,
-          query,
-        }),
-        staleTime: 1000 * 60 * 5, // 5 minutes
-      });
-    }
+    prefetchProducts({ page });
 
     setPage(page);
   };
 
+  // TODO update this
   if (isPending) {
     return (
       <div className="flex flex-col lg:flex-col gap-8 min-h-[60vh] max-w-7xl mx-auto">
@@ -122,15 +108,12 @@ function ProductList() {
                 <span className="text-blue-600"> matching "{query}"</span>
               )}
             </h2>
-            <p className="text-gray-600 mt-1">
-              {data?.total || 0} products found
-            </p>
+            <p className="text-gray-600 mt-1">{total || 0} products found</p>
           </div>
 
           {/* Results indicator */}
           <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-            Page {currentPage} of{' '}
-            {Math.ceil((data?.total || 0) / (data?.limit || 10))}
+            Page {currentPage} of {Math.ceil((total || 0) / (limit || 10))}
           </div>
         </div>
       </div>
@@ -156,9 +139,9 @@ function ProductList() {
               }
             )}
           >
-            {data?.products && data.products.length > 0 ? (
+            {products.length > 0 ? (
               <div className="space-y-4 mb-8">
-                {data.products.map((product) => (
+                {products.map((product) => (
                   <div
                     key={product.id}
                     className="transform transition-all duration-200 hover:scale-[1.01]"
@@ -198,28 +181,25 @@ function ProductList() {
                     : `It looks like there are no products available at the moment.`}
                 </p>
                 {(query || category) && (
-                  <button
-                    onClick={() => {
-                      setPage(1);
-                      setEmptyCategory();
-                      setSearchQuery('');
-                    }}
+                  <Button
+                    onClick={clearSearchParams}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
                     Clear Filters
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
           </div>
 
           {/* Pagination */}
-          {data?.products && data.products.length > 0 && (
+          {products.length > 0 && (
             <div className="flex justify-center pt-8 border-t border-gray-200">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                <Pagination
+                <PagePagination
+                  pageLimit={PAGE_LIMIT}
                   currentPage={currentPage}
-                  totalItems={data.total}
+                  totalItems={total}
                   onHandleChangePage={handleChangePage}
                 />
               </div>

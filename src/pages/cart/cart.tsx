@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+
 import {
   Card,
   CardContent,
@@ -9,79 +10,25 @@ import {
   CardAction,
 } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
-
-// Mock cart item type - you can replace this with your actual cart item type
-type CartItem = {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  quantity: number;
-  thumbnail: string;
-  category: string;
-};
-
-// Mock cart data - replace with your actual cart state/data
-const mockCartItems: CartItem[] = [
-  {
-    id: 1,
-    title: 'iPhone 9',
-    description: 'An apple mobile which is nothing like apple',
-    price: 549,
-    quantity: 2,
-    thumbnail: 'https://cdn.dummyjson.com/product-images/1/thumbnail.jpg',
-    category: 'smartphones',
-  },
-  {
-    id: 2,
-    title: 'iPhone X',
-    description: 'SIM-Free, Model A19211 6.5-inch Super Retina HD display',
-    price: 899,
-    quantity: 1,
-    thumbnail: 'https://cdn.dummyjson.com/product-images/2/thumbnail.jpg',
-    category: 'smartphones',
-  },
-  {
-    id: 3,
-    title: 'Samsung Universe 9',
-    description:
-      "Samsung's new variant which goes beyond Galaxy to the Universe",
-    price: 1249,
-    quantity: 1,
-    thumbnail: 'https://cdn.dummyjson.com/product-images/3/thumbnail.jpg',
-    category: 'smartphones',
-  },
-];
+import { useCart } from '@/modules/cart/hooks/useCart';
 
 function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems);
+  const { cart, itemCount } = useCart();
 
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    // setCartItems((items) =>
+    //   items.map((item) =>
+    //     item.id === id ? { ...item, quantity: newQuantity } : item
+    //   )
+    // );
   };
 
   const removeItem = (id: number) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+    // setCartItems((items) => items.filter((item) => item.id !== id));
   };
 
-  const getTotalPrice = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  };
-
-  const getTotalItems = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  if (cartItems.length === 0) {
+  if (!cart) {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <div className="flex items-center gap-3 mb-8">
@@ -114,14 +61,14 @@ function Cart() {
           <h1 className="text-3xl font-bold text-gray-800">Shopping Cart</h1>
         </div>
         <div className="text-sm text-gray-600">
-          {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'}
+          {itemCount} {itemCount === 1 ? 'item' : 'items'}
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
-          {cartItems.map((item) => (
+          {cart.products.map((item) => (
             <Card key={item.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start gap-4">
@@ -133,10 +80,12 @@ function Cart() {
                   <div className="flex-grow">
                     <CardTitle className="text-lg mb-1">{item.title}</CardTitle>
                     <CardDescription className="text-sm text-gray-600 mb-2">
-                      {item.description}
+                      {/* {item.description} */}
+                      item.description
                     </CardDescription>
                     <div className="text-sm text-gray-500 capitalize">
-                      Category: {item.category}
+                      {/* Category: {item.category} */}
+                      Category: item.category
                     </div>
                   </div>
                   <CardAction>
@@ -203,11 +152,9 @@ function Cart() {
             <CardContent className="space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">
-                  Subtotal ({getTotalItems()} items)
+                  Subtotal ({itemCount} items)
                 </span>
-                <span className="font-medium">
-                  ${getTotalPrice().toFixed(2)}
-                </span>
+                <span className="font-medium">${cart.total.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between text-sm">
@@ -218,7 +165,7 @@ function Cart() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Tax</span>
                 <span className="font-medium">
-                  ${(getTotalPrice() * 0.08).toFixed(2)}
+                  ${(cart.total * 0.08).toFixed(2)}
                 </span>
               </div>
 
@@ -226,7 +173,7 @@ function Cart() {
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
                   <span className="text-blue-600">
-                    ${(getTotalPrice() * 1.08).toFixed(2)}
+                    ${(cart.total * 1.08).toFixed(2)}
                   </span>
                 </div>
               </div>

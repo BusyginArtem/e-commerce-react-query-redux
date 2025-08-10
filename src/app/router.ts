@@ -2,7 +2,7 @@ import { createBrowserRouter, redirect } from 'react-router';
 
 import Template from '../shared/ui/template';
 import { queryClient } from '@/shared/api/query-client';
-import { productListApi } from '@/modules/products/api';
+import { productsApi } from '@/modules/products/api';
 import {
   getCurrentUserId,
   prefetchUserData,
@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
                 : '';
 
               queryClient.prefetchQuery({
-                ...productListApi.getPaginatedProductListQueryOptions({
+                ...productsApi.getPaginatedProductListQueryOptions({
                   page,
                   category,
                   query,
@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
               });
 
               queryClient.prefetchQuery({
-                ...productListApi.getProductCategoriesQueryOptions(),
+                ...productsApi.getProductCategoriesQueryOptions(),
               });
 
               return null;
@@ -73,7 +73,7 @@ export const router = createBrowserRouter([
               const page = Number(url.searchParams.get('page')) || 1;
 
               queryClient.prefetchQuery({
-                ...productListApi.getProductByIdQueryOptions({
+                ...productsApi.getProductByIdQueryOptions({
                   id: Number(params.id),
                   page,
                 }),

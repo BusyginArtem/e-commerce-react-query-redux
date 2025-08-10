@@ -2,10 +2,11 @@ import { useRef } from 'react';
 import { Filter } from 'lucide-react';
 
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
-import Categories from './categories';
+
 import { cn } from '@/shared/utils/style-helpers';
 import { Button } from '@/shared/ui/button';
 import SearchInput from './search-input';
+import { Categories } from '@/modules/categories/ui';
 
 function Filters() {
   const {
@@ -13,6 +14,7 @@ function Filters() {
     setEmptyCategory,
     setSearchQuery,
     getCurrentCategory,
+    clearSearchParams,
   } = useAppSearchParams();
   const query = getCurrentQuery();
   const category = getCurrentCategory();
@@ -34,11 +36,9 @@ function Filters() {
 
   const handleSetEmptyCategory = () => {
     setEmptyCategory();
-    // setSearchValue('');
   };
 
   const clearSearch = () => {
-    // setSearchValue('');
     setSearchQuery('');
   };
 
@@ -54,10 +54,7 @@ function Filters() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => {
-            handleSetEmptyCategory();
-            clearSearch();
-          }}
+          onClick={clearSearchParams}
           className="text-blue-600 hover:text-blue-700 ml-auto cursor-pointer"
         >
           Clear all filters
@@ -80,7 +77,7 @@ function Filters() {
 
         <div className="space-y-3">
           {/* All Categories Button */}
-          <button
+          <Button
             onClick={handleSetEmptyCategory}
             className={cn(
               'w-full px-4 py-3 rounded-xl text-sm font-medium border-2 transition-all duration-200',
@@ -95,7 +92,7 @@ function Filters() {
               <span>All Products</span>
               <div className="w-2 h-2 bg-current rounded-full opacity-60"></div>
             </div>
-          </button>
+          </Button>
 
           {/* Category Pills */}
           <div className="space-y-2">

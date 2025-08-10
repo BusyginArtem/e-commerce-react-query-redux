@@ -1,17 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { useParams, useSearchParams, Link } from 'react-router';
-
-import { productListApi } from '@/modules/products/api';
-import {
-  Card,
-  CardContent,
-  CardTitle,
-  CardDescription,
-} from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
+import { useParams, Link } from 'react-router';
 import {
   ArrowLeft,
-  Star,
   ShoppingCart,
   Package,
   AlertCircle,
@@ -19,26 +8,22 @@ import {
   Share2,
 } from 'lucide-react';
 
+import {
+  Card,
+  CardContent,
+  CardTitle,
+  CardDescription,
+} from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
 import Reviews from './reviews';
+import { Stars } from '@/shared/ui/stars';
+
+import { useProduct } from '@/modules/products/hooks/useProduct';
 
 function Product() {
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
 
-  const currentPage = searchParams.get('page')
-    ? Number(searchParams.get('page'))
-    : 1;
-
-  const {
-    isPending,
-    isError,
-    data: product,
-  } = useQuery({
-    ...productListApi.getProductByIdQueryOptions({
-      page: currentPage,
-      id: Number(id),
-    }),
-  });
+  const { isPending, isError, product } = useProduct({ id: Number(id) });
 
   if (isPending && !product) {
     return (
@@ -135,19 +120,6 @@ function Product() {
     );
   }
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, index) => (
-      <Star
-        key={index}
-        className={`h-5 w-5 ${
-          index < Math.floor(rating)
-            ? 'text-yellow-400 fill-current'
-            : 'text-gray-300'
-        }`}
-      />
-    ));
-  };
-
   return (
     <div className="max-w-6xl mx-auto">
       {/* Breadcrumb */}
@@ -226,7 +198,9 @@ function Product() {
 
             {/* Rating */}
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex">{renderStars(product.rating)}</div>
+              <div className="flex">
+                <Stars rating={product.rating} />
+              </div>
               <span className="text-sm text-gray-600">
                 {product.rating}/5
                 {product.reviews && (

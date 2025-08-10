@@ -1,4 +1,4 @@
-import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
+import { queryOptions } from '@tanstack/react-query';
 import { z } from 'zod';
 import { jsonApiInstance } from '../../../shared/api/api-instance';
 import { queryClient } from '@/shared/api/query-client';
@@ -65,7 +65,7 @@ const PaginatedResultSchema = z.object({
   limit: z.number(),
 });
 
-export const productListApi = {
+export const productsApi = {
   baseKey: 'products',
   getPaginatedProductListQueryOptions: ({
     limit = PAGE_LIMIT,
@@ -80,7 +80,7 @@ export const productListApi = {
   }) => {
     return queryOptions({
       queryKey: [
-        productListApi.baseKey,
+        productsApi.baseKey,
         'list',
         page,
         {
@@ -104,27 +104,15 @@ export const productListApi = {
     });
   },
 
-  getTodoListInfinityQueryOptions: () => {
-    return infiniteQueryOptions({
-      queryKey: [productListApi.baseKey, 'list'],
-      queryFn: (meta) =>
-        jsonApiInstance<PaginatedProductsResult>(
-          `/products?limit=${PAGE_LIMIT}&skip=${meta.pageParam || 0}`,
-          {
-            signal: meta.signal,
-          }
-        ).then((data) => {
-          return PaginatedResultSchema.parse(data);
-        }),
-      initialPageParam: 1,
-      getNextPageParam: (result) => result.skip + result.limit,
-      select: (result) => result.pages.flatMap((page) => page.products),
-    });
-  },
-
-  getProductByIdQueryOptions: ({ id, page }: { id: number; page: number }) => {
+  getProductByIdQueryOptions: ({
+    id,
+    page,
+  }: {
+    id: number | undefined;
+    page: number;
+  }) => {
     return queryOptions({
-      queryKey: [productListApi.baseKey, 'entity', id],
+      queryKey: [productsApi.baseKey, 'entity', id],
       queryFn: (meta) =>
         jsonApiInstance<ProductDto>(`/products/${id}`, {
           signal: meta.signal,
@@ -134,7 +122,7 @@ export const productListApi = {
 
       initialData: () => {
         const data = queryClient.getQueryData<PaginatedProductsResult>([
-          productListApi.baseKey,
+          productsApi.baseKey,
           'list',
           page,
         ]);
@@ -142,12 +130,13 @@ export const productListApi = {
         if (!data) return undefined;
         return data?.products?.find((p) => p.id === Number(id));
       },
+      enabled: Boolean(id),
     });
   },
 
   getProductCategoriesQueryOptions: () => {
     return queryOptions({
-      queryKey: [productListApi.baseKey, 'categories'],
+      queryKey: [productsApi.baseKey, 'categories'],
       queryFn: (meta) =>
         jsonApiInstance<string[]>(`/products/category-list`, {
           signal: meta.signal,
