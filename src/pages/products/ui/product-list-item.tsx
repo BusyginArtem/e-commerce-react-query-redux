@@ -10,19 +10,13 @@ import {
   CardAction,
 } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
+import { Stars } from '@/shared/ui/stars';
 
-import type { ProductDto } from '../api';
-import { cn } from '@/shared/utils/style-helpers';
+import type { ProductDto } from '@/modules/products/api';
 
-const renderStars = (rating: number) => {
-  return Array.from({ length: 5 }, (_, index) => (
-    <Star
-      key={index}
-      className={cn('h-4 w-4 text-gray-300', {
-        'text-yellow-400 fill-current': index < Math.floor(rating),
-      })}
-    />
-  ));
+const truncateText = (text: string, maxLength: number) => {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 };
 
 function ProductItem({ product }: { product: ProductDto }) {
@@ -35,21 +29,18 @@ function ProductItem({ product }: { product: ProductDto }) {
     });
   };
 
+  // TODO implement
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Add to cart logic here
     console.log('Added to cart:', product.id);
   };
 
+  // TODO implement
   const handleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Wishlist logic here
     console.log('Added to wishlist:', product.id);
-  };
-
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
   };
 
   return (
@@ -106,7 +97,9 @@ function ProductItem({ product }: { product: ProductDto }) {
                 {product.category}
               </span>
               <div className="flex items-center gap-1">
-                <div className="flex">{renderStars(product.rating)}</div>
+                <div className="flex">
+                  <Stars rating={product.rating} />
+                </div>
                 <span className="text-sm text-gray-600 ml-1">
                   ({product.rating})
                 </span>

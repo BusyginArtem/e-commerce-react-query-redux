@@ -8,6 +8,13 @@ import type { UserIdentifier } from '@/modules/auth/api';
 export type CartIdentifier = Brand<number, 'CART_IDENTIFIER'>;
 export type ProductIdentifier = Brand<number, 'PRODUCT_IDENTIFIER'>;
 
+export type PaginatedCartsResult = {
+  carts: CartDto[];
+  total: number;
+  skip: number;
+  limit: number;
+};
+
 export type CartProductDto = {
   id: ProductIdentifier;
   title: string;
@@ -52,6 +59,13 @@ export const CartDtoSchema = z.object({
   totalQuantity: z.number(),
 });
 
+const PaginatedResultSchema = z.object({
+  carts: z.array(CartDtoSchema),
+  total: z.number(),
+  skip: z.number(),
+  limit: z.number(),
+});
+
 export const cartApi = {
   baseKey: 'cart',
 
@@ -59,11 +73,16 @@ export const cartApi = {
     return queryOptions({
       queryKey: [cartApi.baseKey, 'byId', userId],
       queryFn: (meta) =>
-        jsonApiInstance<CartDto>(`/carts/user/${userId}`, {
+        jsonApiInstance<PaginatedCartsResult>(`/carts/user/${userId}`, {
           signal: meta.signal,
-        }).then((data) => {
-          return CartDtoSchema.parse(data);
-        }),
+        })
+          .then((data) => {
+            if (!PaginatedResultSchema.parse(data))
+              throw new Error('Invalid data');
+
+            return CartDtoSchema.parse(data.carts[0]);
+          })
+          .catch((error) => console.error(error)),
     });
   },
 };

@@ -92,5 +92,8 @@ export const useAppSearchParams = () => {
     getCurrentQuery: () => {
       return searchParams.get('query') || '';
     },
+    clearSearchParams: () => {
+      setSearchParams({ page: String(1) }, { replace: true });
+    },
   };
 };

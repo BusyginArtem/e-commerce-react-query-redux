@@ -1,15 +1,15 @@
-// src/modules/cart/hooks/useCart.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
+
 import { useAppSelector } from '@/app/store';
 import { authSlice } from '@/modules/auth/features/auth.slice';
+import { queryClient } from '@/shared/api/query-client';
 import { cartApi, type CartDto, type ProductIdentifier } from '../api';
 
 export function useCart() {
-  const queryClient = useQueryClient();
   const userId = useAppSelector(authSlice.selectors.userId);
 
   // Query for cart data
-  const cartQuery = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     ...cartApi.getCartByUserIdQueryOptions({ userId: userId! }),
     enabled: !!userId,
   });
@@ -83,7 +83,7 @@ export function useCart() {
     productId: ProductIdentifier,
     newQuantity: number
   ) => {
-    if (!userId || !cartQuery.data) return;
+    if (!userId || !data) return;
 
     // Update the cache optimistically
     queryClient.setQueryData<CartDto>(
@@ -137,7 +137,7 @@ export function useCart() {
 
   // Optimistic remove item
   const removeItemOptimistic = (productId: ProductIdentifier) => {
-    if (!userId || !cartQuery.data) return;
+    if (!userId || !data) return;
 
     // Update the cache optimistically
     queryClient.setQueryData<CartDto>(
@@ -177,13 +177,13 @@ export function useCart() {
     // Then trigger the actual API call
     removeItemMutation.mutate(productId);
   };
-
+  console.log('%c data', 'color: green; font-weight: bold;', data);
   return {
     // Query state
-    cart: cartQuery.data,
-    isLoading: cartQuery.isLoading,
-    isError: cartQuery.isError,
-    error: cartQuery.error,
+    cart: data,
+    isLoading: isLoading,
+    isError: isError,
+    error,
 
     // Mutation state
     isUpdatingQuantity: updateQuantityMutation.isPending,
@@ -196,8 +196,8 @@ export function useCart() {
     addToCart: addToCartMutation.mutate,
 
     // Computed values
-    itemCount: cartQuery.data?.totalQuantity || 0,
-    itemTypes: cartQuery.data?.totalProducts || 0,
-    isEmpty: !cartQuery.data?.products || cartQuery.data.products.length === 0,
+    itemCount: data?.totalQuantity || 0,
+    itemTypes: data?.totalProducts || 0,
+    isEmpty: !data?.products || data.products.length === 0,
   };
 }

@@ -7,20 +7,21 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/shared/ui/pagination';
-import { PAGE_LIMIT } from '../api';
 
 type Props = {
+  pageLimit?: number;
   totalItems: number;
   currentPage: number;
   onHandleChangePage: ({ page }: { page: number }) => void;
 };
 
-export default function Pagination({
+export default function PagePagination({
+  pageLimit = 10,
   totalItems = 10,
   currentPage = 1,
   onHandleChangePage,
 }: Props) {
-  const totalPages = Math.ceil(totalItems / PAGE_LIMIT);
+  const totalPages = Math.ceil(totalItems / pageLimit);
 
   const handleChangePage = (page: number) => {
     if (page >= 1 && page <= totalPages) {

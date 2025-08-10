@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { Star, ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart, Heart } from 'lucide-react';
 
 import {
   Card,
@@ -9,20 +9,9 @@ import {
   CardDescription,
 } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
+import { Stars } from '@/shared/ui/stars';
 
-import type { ProductDto } from '../api';
-import { cn } from '@/shared/utils/style-helpers';
-
-const renderStars = (rating: number) => {
-  return Array.from({ length: 5 }, (_, index) => (
-    <Star
-      key={index}
-      className={cn('h-4 w-4 text-gray-300', {
-        'text-yellow-400 fill-current': index < Math.floor(rating),
-      })}
-    />
-  ));
-};
+import type { ProductDto } from '@/modules/products/api';
 
 function ProductGridItem({ product }: { product: ProductDto }) {
   const navigate = useNavigate();
@@ -101,7 +90,9 @@ function ProductGridItem({ product }: { product: ProductDto }) {
 
         {/* Rating */}
         <div className="flex items-center gap-1">
-          <div className="flex">{renderStars(product.rating)}</div>
+          <div className="flex">
+            <Stars rating={product.rating} />
+          </div>
           <span className="text-xs text-gray-500 ml-1">({product.rating})</span>
         </div>
 
