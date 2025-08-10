@@ -85,4 +85,23 @@ export const cartApi = {
           .catch((error) => console.error(error)),
     });
   },
+
+  updateProductQuantity: async ({
+    cartId,
+    productId,
+    quantity,
+  }: {
+    cartId: CartIdentifier;
+    productId: ProductIdentifier;
+    quantity: number;
+  }) => {
+    console.log('updateProductQuantity');
+    return jsonApiInstance(`/carts/${cartId}`, {
+      json: {
+        merge: true,
+        products: [{ id: productId, quantity }],
+      },
+      method: 'PUT',
+    }).then((data) => CartDtoSchema.parse(data));
+  },
 };

@@ -6,8 +6,12 @@ import { useQuery } from '@tanstack/react-query';
 export function useUserData() {
   const userId = useAppSelector(authSlice.selectors.userId);
 
-  return useQuery({
+  const { data } = useQuery({
     ...usersApi.getUserByIdQueryOptions({ userId: userId! }),
     enabled: !!userId,
   });
+
+  return {
+    user: data,
+  };
 }

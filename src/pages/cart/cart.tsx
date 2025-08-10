@@ -1,4 +1,4 @@
-import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 
 import {
   Card,
@@ -7,26 +7,13 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-  CardAction,
 } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useCart } from '@/modules/cart/hooks/useCart';
+import CartItem from './cart-item';
 
 function Cart() {
   const { cart, itemCount } = useCart();
-
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    // setCartItems((items) =>
-    //   items.map((item) =>
-    //     item.id === id ? { ...item, quantity: newQuantity } : item
-    //   )
-    // );
-  };
-
-  const removeItem = (id: number) => {
-    // setCartItems((items) => items.filter((item) => item.id !== id));
-  };
 
   if (!cart) {
     return (
@@ -52,6 +39,9 @@ function Cart() {
     );
   }
 
+  const totalDiscount = cart.total - cart.discountedTotal;
+  const hasDiscounts = totalDiscount > 0;
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Header */}
@@ -69,76 +59,7 @@ function Cart() {
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
           {cart.products.map((item) => (
-            <Card key={item.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start gap-4">
-                  <img
-                    src={item.thumbnail}
-                    alt={item.title}
-                    className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-                  />
-                  <div className="flex-grow">
-                    <CardTitle className="text-lg mb-1">{item.title}</CardTitle>
-                    <CardDescription className="text-sm text-gray-600 mb-2">
-                      {/* {item.description} */}
-                      item.description
-                    </CardDescription>
-                    <div className="text-sm text-gray-500 capitalize">
-                      {/* Category: {item.category} */}
-                      Category: item.category
-                    </div>
-                  </div>
-                  <CardAction>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeItem(item.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </CardAction>
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="text-xl font-bold text-gray-800">
-                    ${item.price.toFixed(2)}
-                  </div>
-
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      disabled={item.quantity <= 1}
-                      className="h-8 w-8"
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-
-                    <span className="w-12 text-center font-medium">
-                      {item.quantity}
-                    </span>
-
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="h-8 w-8"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-
-                  <div className="text-lg font-bold text-blue-600">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <CartItem key={item.id} item={item} />
           ))}
         </div>
 
@@ -157,26 +78,43 @@ function Cart() {
                 <span className="font-medium">${cart.total.toFixed(2)}</span>
               </div>
 
+              {hasDiscounts && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Discount</span>
+                  <span className="font-medium text-green-600">
+                    -${totalDiscount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Shipping</span>
                 <span className="font-medium text-green-600">Free</span>
               </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Tax</span>
-                <span className="font-medium">
-                  ${(cart.total * 0.08).toFixed(2)}
-                </span>
-              </div>
-
               <div className="border-t pt-4">
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
-                  <span className="text-blue-600">
-                    ${(cart.total * 1.08).toFixed(2)}
-                  </span>
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold">Total</span>
+                  <div className="text-right">
+                    {hasDiscounts && (
+                      <div className="text-sm line-through text-gray-400">
+                        ${cart.total.toFixed(2)}
+                      </div>
+                    )}
+                    <div className="text-lg font-bold text-blue-600">
+                      ${cart.discountedTotal.toFixed(2)}
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {hasDiscounts && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="text-sm font-medium text-green-800">
+                    You're saving ${totalDiscount.toFixed(2)}!
+                  </div>
+                </div>
+              )}
             </CardContent>
 
             <CardFooter className="flex flex-col gap-3">

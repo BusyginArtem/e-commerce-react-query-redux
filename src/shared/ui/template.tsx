@@ -9,11 +9,13 @@ import { Button } from './button';
 import { useAppDispatch } from '@/app/store';
 import { logoutThunk } from '@/modules/auth/thunks/logout';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { useCart } from '@/modules/cart/hooks/useCart';
 
 function Template() {
   const { pathname } = useLocation();
 
-  const { data: user } = useUserData();
+  const { user } = useUserData();
+  const { itemCount } = useCart();
 
   const dispatch = useAppDispatch();
 
@@ -29,7 +31,7 @@ function Template() {
       label: 'Cart',
       icon: ShoppingCart,
       isActive: pathname.startsWith('/cart'),
-      badge: 3, // Cart item count
+      badge: itemCount,
     },
   ];
 
@@ -56,6 +58,7 @@ function Template() {
             <nav className="flex items-center space-x-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
+
                 return (
                   <Link
                     key={item.to}
@@ -72,10 +75,11 @@ function Template() {
                     {item.badge && (
                       <span
                         className={cn(
-                          'absolute -top-1 -right-1 h-5 w-5 rounded-full text-xs font-bold flex items-center justify-center',
-                          item.isActive
-                            ? 'bg-white text-blue-600'
-                            : 'bg-blue-600 text-white'
+                          'absolute -top-2 -right-1 h-5 w-5 rounded-full text-xs font-bold flex items-center justify-center',
+                          {
+                            'bg-white text-blue-600': item.isActive,
+                            'bg-blue-600 text-white': !item.isActive,
+                          }
                         )}
                       >
                         {item.badge}

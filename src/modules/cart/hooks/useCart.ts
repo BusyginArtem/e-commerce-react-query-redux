@@ -14,9 +14,6 @@ export function useCart() {
     enabled: !!userId,
   });
 
-  // TODO: Add mutations for cart operations
-  // These would typically call your API endpoints for updating cart
-
   const updateQuantityMutation = useMutation({
     mutationFn: async ({
       productId,
@@ -25,18 +22,17 @@ export function useCart() {
       productId: ProductIdentifier;
       quantity: number;
     }) => {
-      // This would call your API to update quantity
-      // For now, just simulate the API call
-      console.log('Updating quantity:', productId, quantity);
-
-      // You would implement actual API call here
-      // return await cartApi.updateProductQuantity({ userId: userId!, productId, quantity });
+      return await cartApi.updateProductQuantity({
+        cartId: data!.id,
+        productId,
+        quantity,
+      });
     },
     onSuccess: () => {
       // Invalidate and refetch cart data
-      queryClient.invalidateQueries({
-        queryKey: [cartApi.baseKey, 'byId', userId],
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: [cartApi.baseKey, 'byId', userId],
+      // });
     },
   });
 
@@ -46,7 +42,7 @@ export function useCart() {
       console.log('Removing item:', productId);
 
       // You would implement actual API call here
-      // return await cartApi.removeProduct({ userId: userId!, productId });
+      return await cartApi.removeProduct({ userId: userId!, productId });
     },
     onSuccess: () => {
       // Invalidate and refetch cart data
@@ -68,7 +64,7 @@ export function useCart() {
       console.log('Adding to cart:', productId, quantity);
 
       // You would implement actual API call here
-      // return await cartApi.addProduct({ userId: userId!, productId, quantity });
+      return await cartApi.addProduct({ userId: userId!, productId, quantity });
     },
     onSuccess: () => {
       // Invalidate and refetch cart data
@@ -84,6 +80,8 @@ export function useCart() {
     newQuantity: number
   ) => {
     if (!userId || !data) return;
+
+    console.log('updateQuantityOptimistic');
 
     // Update the cache optimistically
     queryClient.setQueryData<CartDto>(
@@ -177,7 +175,7 @@ export function useCart() {
     // Then trigger the actual API call
     removeItemMutation.mutate(productId);
   };
-  console.log('%c data', 'color: green; font-weight: bold;', data);
+
   return {
     // Query state
     cart: data,
