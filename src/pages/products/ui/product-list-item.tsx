@@ -13,6 +13,7 @@ import { Button } from '@/shared/ui/button';
 import { Stars } from '@/shared/ui/stars';
 
 import type { ProductDto } from '@/modules/products/api';
+import { useCart } from '@/modules/cart/hooks/useCart';
 
 const truncateText = (text: string, maxLength: number) => {
   if (text.length <= maxLength) return text;
@@ -22,6 +23,8 @@ const truncateText = (text: string, maxLength: number) => {
 function ProductItem({ product }: { product: ProductDto }) {
   const navigate = useNavigate();
 
+  const { addToCart } = useCart();
+
   const handleClick = () => {
     navigate({
       pathname: `/products/${product.id}`,
@@ -29,11 +32,10 @@ function ProductItem({ product }: { product: ProductDto }) {
     });
   };
 
-  // TODO implement
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Add to cart logic here
-    console.log('Added to cart:', product.id);
+
+    addToCart({ productId: product.id });
   };
 
   // TODO implement

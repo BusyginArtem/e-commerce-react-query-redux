@@ -51,7 +51,7 @@ function SignIn() {
   const loginError = useAppSelector(authSlice.selectors.selectError);
 
   const navigate = useNavigate();
-  const { data: user } = useUserData();
+  const { user } = useUserData();
 
   useEffect(() => {
     if (user?.id) {
@@ -98,8 +98,8 @@ function SignIn() {
 
   const handleDemoLogin = () => {
     // Set demo credentials
-    const demoUsername = 'ariam';
-    const demoPassword = 'ariampass';
+    const demoUsername = 'emilys';
+    const demoPassword = 'emilyspass';
 
     setFormData({
       username: demoUsername,
@@ -165,7 +165,7 @@ function SignIn() {
                 <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0" />
                 <div className="flex-1">
                   <span className="text-sm text-blue-700">
-                    Demo: ariam / ariampass
+                    Demo: emilys / emilyspass
                   </span>
                 </div>
                 <Button

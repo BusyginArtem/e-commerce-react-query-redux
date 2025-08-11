@@ -1,12 +1,17 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-import { queryClient } from '@/shared/api/query-client';
+// import { queryClient } from '@/shared/api/query-client';
 import { PAGE_LIMIT, productsApi } from '../api';
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 
 export function useProducts() {
   const { getCurrentPage, getCurrentQuery, getCurrentCategory } =
     useAppSearchParams();
+  const queryClient = useQueryClient();
 
   const query = getCurrentQuery();
   const currentPage = getCurrentPage();

@@ -1,21 +1,19 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useAppSelector } from '@/app/store';
 import { authSlice } from '@/modules/auth/features/auth.slice';
-import { queryClient } from '@/shared/api/query-client';
-import { cartApi, type CartDto, type ProductIdentifier } from '../api';
+import { cartApi, type CartDto } from '../api';
+import type { ProductIdentifier } from '@/modules/products/api';
 
 export function useCart() {
   const userId = useAppSelector(authSlice.selectors.userId);
+  const queryClient = useQueryClient();
 
   // Query for cart data
   const { data, isLoading, isError, error } = useQuery({
     ...cartApi.getCartByUserIdQueryOptions({ userId: userId! }),
     enabled: !!userId,
   });
-
-  // TODO: Add mutations for cart operations
-  // These would typically call your API endpoints for updating cart
 
   const updateQuantityMutation = useMutation({
     mutationFn: async ({
@@ -25,12 +23,12 @@ export function useCart() {
       productId: ProductIdentifier;
       quantity: number;
     }) => {
-      // This would call your API to update quantity
-      // For now, just simulate the API call
-      console.log('Updating quantity:', productId, quantity);
-
-      // You would implement actual API call here
-      // return await cartApi.updateProductQuantity({ userId: userId!, productId, quantity });
+      return await cartApi.updateProductQuantity({
+        userId: userId!,
+        cartId: data!.id,
+        productId,
+        quantity,
+      });
     },
     onSuccess: () => {
       // Invalidate and refetch cart data
@@ -42,11 +40,11 @@ export function useCart() {
 
   const removeItemMutation = useMutation({
     mutationFn: async (productId: ProductIdentifier) => {
-      // This would call your API to remove item
-      console.log('Removing item:', productId);
-
-      // You would implement actual API call here
-      // return await cartApi.removeProduct({ userId: userId!, productId });
+      return await cartApi.removeProduct({
+        userId: userId!,
+        productId,
+        cartId: data!.id,
+      });
     },
     onSuccess: () => {
       // Invalidate and refetch cart data
@@ -64,17 +62,122 @@ export function useCart() {
       productId: ProductIdentifier;
       quantity?: number;
     }) => {
-      // This would call your API to add item to cart
-      console.log('Adding to cart:', productId, quantity);
-
       // You would implement actual API call here
-      // return await cartApi.addProduct({ userId: userId!, productId, quantity });
+      return await cartApi.addProduct({
+        userId: userId!,
+        productId,
+        quantity,
+        cartId: data!.id,
+      });
     },
+    // onMutate: async () => {
+    //   // Cancel any outgoing refetches
+    //   // (so they don't overwrite our optimistic update)
+    //   await queryClient.cancelQueries({
+    //     queryKey: [cartApi.baseKey, 'byId', userId],
+    //   });
+
+    //   queryClient.setQueryData([cartApi.baseKey, 'byId', userId], () => {
+    //     if (!data) return data;
+
+    //     const products = data.products;
+
+    //     const total = products.reduce((sum, product) => sum + product.total, 0);
+    //     const discountedTotal = products.reduce(
+    //       (sum, product) => sum + (product?.discountedTotal ?? 0),
+    //       0
+    //     );
+    //     const totalQuantity = products.reduce(
+    //       (sum, product) => sum + product.quantity,
+    //       0
+    //     );
+
+    //     return {
+    //       ...data,
+    //       total,
+    //       discountedTotal,
+    //       totalQuantity,
+    //       totalProducts: products.length,
+    //     };
+    //   });
+
+    //   // Snapshot the previous value
+    //   const previousCart = queryClient.getQueryData([
+    //     cartApi.baseKey,
+    //     'byId',
+    //     userId,
+    //   ]);
+
+    //   // Return a context with the previous and new todo
+    //   return { previousCart };
+    // },
+    // onError: (_, __, context) => {
+    //   if (context?.previousCart !== undefined) {
+    //     queryClient.setQueryData(
+    //       [cartApi.baseKey, 'byId', userId],
+    //       context.previousCart
+    //     );
+    //   }
+    // },
     onSuccess: () => {
       // Invalidate and refetch cart data
       queryClient.invalidateQueries({
         queryKey: [cartApi.baseKey, 'byId', userId],
       });
+    },
+  });
+
+  const createCartMutation = useMutation({
+    mutationFn: async ({
+      productId,
+      quantity = 1,
+    }: {
+      productId: ProductIdentifier;
+      quantity?: number;
+    }) => {
+      return await cartApi.createCart({
+        userId: userId!,
+        productId,
+        quantity,
+      });
+    },
+    // onMutate: async () => {
+    //   // Cancel any outgoing refetches
+    //   // (so they don't overwrite our optimistic update)
+    //   await queryClient.cancelQueries({
+    //     queryKey: [cartApi.baseKey, 'byId', userId],
+    //   });
+
+    //   // Snapshot the previous value
+    //   const previousCart = queryClient.getQueryData([
+    //     cartApi.baseKey,
+    //     'byId',
+    //     userId,
+    //   ]);
+
+    //   // Return a context with the previous and new todo
+    //   return { previousCart };
+    // },
+    // onError: (_, __, context) => {
+    //   if (context?.previousCart !== undefined) {
+    //     queryClient.setQueryData(
+    //       [cartApi.baseKey, 'byId', userId],
+    //       context.previousCart
+    //     );
+    //   }
+    // },
+    onSuccess: (data) => {
+      // TODO remove in production
+      queryClient.setQueryData<CartDto>(
+        [cartApi.baseKey, 'byId', userId],
+        data
+      );
+
+      // TODO uncomment in production
+      // Invalidate and refetch cart data
+      // return queryClient.invalidateQueries({
+      //   queryKey: [cartApi.baseKey, 'byId', userId],
+      // });
     },
   });
 
@@ -113,7 +216,7 @@ export function useCart() {
           0
         );
         const discountedTotal = updatedProducts.reduce(
-          (sum, product) => sum + product.discountedTotal,
+          (sum, product) => sum + (product.discountedTotal ?? 0),
           0
         );
         const totalQuantity = updatedProducts.reduce(
@@ -155,7 +258,7 @@ export function useCart() {
           0
         );
         const discountedTotal = updatedProducts.reduce(
-          (sum, product) => sum + product.discountedTotal,
+          (sum, product) => sum + (product?.discountedTotal ?? 0),
           0
         );
         const totalQuantity = updatedProducts.reduce(
@@ -177,7 +280,21 @@ export function useCart() {
     // Then trigger the actual API call
     removeItemMutation.mutate(productId);
   };
-  console.log('%c data', 'color: green; font-weight: bold;', data);
+
+  const addToCart = async ({
+    productId,
+    quantity,
+  }: {
+    productId: ProductIdentifier;
+    quantity?: number;
+  }) => {
+    if (!data) {
+      return createCartMutation.mutate({ productId, quantity });
+    } else {
+      return addToCartMutation.mutate({ productId, quantity });
+    }
+  };
+
   return {
     // Query state
     cart: data,
@@ -193,7 +310,7 @@ export function useCart() {
     // Actions
     updateQuantity: updateQuantityOptimistic,
     removeItem: removeItemOptimistic,
-    addToCart: addToCartMutation.mutate,
+    addToCart: addToCart,
 
     // Computed values
     itemCount: data?.totalQuantity || 0,
