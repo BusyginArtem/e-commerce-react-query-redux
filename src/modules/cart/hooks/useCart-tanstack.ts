@@ -70,55 +70,53 @@ export function useCart() {
         cartId: data!.id,
       });
     },
-    // onMutate: async () => {
-    //   // Cancel any outgoing refetches
-    //   // (so they don't overwrite our optimistic update)
-    //   await queryClient.cancelQueries({
-    //     queryKey: [cartApi.baseKey, 'byId', userId],
-    //   });
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: [cartApi.baseKey, 'byId', userId],
+      });
 
-    //   queryClient.setQueryData([cartApi.baseKey, 'byId', userId], () => {
-    //     if (!data) return data;
+      queryClient.setQueryData([cartApi.baseKey, 'byId', userId], () => {
+        if (!data) return data;
 
-    //     const products = data.products;
+        const products = data.products;
 
-    //     const total = products.reduce((sum, product) => sum + product.total, 0);
-    //     const discountedTotal = products.reduce(
-    //       (sum, product) => sum + (product?.discountedTotal ?? 0),
-    //       0
-    //     );
-    //     const totalQuantity = products.reduce(
-    //       (sum, product) => sum + product.quantity,
-    //       0
-    //     );
+        const total = products.reduce((sum, product) => sum + product.total, 0);
+        const discountedTotal = products.reduce(
+          (sum, product) => sum + (product?.discountedTotal ?? 0),
+          0
+        );
+        const totalQuantity = products.reduce(
+          (sum, product) => sum + product.quantity,
+          0
+        );
 
-    //     return {
-    //       ...data,
-    //       total,
-    //       discountedTotal,
-    //       totalQuantity,
-    //       totalProducts: products.length,
-    //     };
-    //   });
+        return {
+          ...data,
+          total,
+          discountedTotal,
+          totalQuantity,
+          totalProducts: products.length,
+        };
+      });
 
-    //   // Snapshot the previous value
-    //   const previousCart = queryClient.getQueryData([
-    //     cartApi.baseKey,
-    //     'byId',
-    //     userId,
-    //   ]);
+      // Snapshot the previous value
+      const previousCart = queryClient.getQueryData([
+        cartApi.baseKey,
+        'byId',
+        userId,
+      ]);
 
-    //   // Return a context with the previous and new todo
-    //   return { previousCart };
-    // },
-    // onError: (_, __, context) => {
-    //   if (context?.previousCart !== undefined) {
-    //     queryClient.setQueryData(
-    //       [cartApi.baseKey, 'byId', userId],
-    //       context.previousCart
-    //     );
-    //   }
-    // },
+      // Return a context with the previous and new todo
+      return { previousCart };
+    },
+    onError: (_, __, context) => {
+      if (context?.previousCart !== undefined) {
+        // queryClient.setQueryData(
+        //   [cartApi.baseKey, 'byId', userId],
+        //   context.previousCart
+        // );
+      }
+    },
     onSuccess: () => {
       // Invalidate and refetch cart data
       queryClient.invalidateQueries({
