@@ -18,8 +18,10 @@ type Props = {
 function CartItem({ item }: Props) {
   const { updateQuantity, removeItem } = useCart();
 
-  const itemDiscount = item.total - item.discountedTotal;
-  const hasItemDiscount = itemDiscount > 0;
+  const itemDiscount = item.discountedTotal
+    ? item.total - item.discountedTotal
+    : 0;
+  const hasItemDiscount = itemDiscount > 0 && item?.discountedTotal;
 
   return (
     <Card key={item.id} className="hover:shadow-lg transition-shadow">
@@ -108,12 +110,12 @@ function CartItem({ item }: Props) {
                   ${item.total.toFixed(2)}
                 </div>
                 <div className="text-lg font-bold text-blue-600">
-                  ${item.discountedTotal.toFixed(2)}
+                  ${item.discountedTotal?.toFixed(2)}
                 </div>
               </>
             ) : (
               <div className="text-lg font-bold text-blue-600">
-                ${item.discountedTotal.toFixed(2)}
+                ${item.total.toFixed(2)}
               </div>
             )}
           </div>

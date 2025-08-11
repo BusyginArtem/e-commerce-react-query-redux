@@ -71,8 +71,10 @@ function Template() {
                     )}
                   >
                     <Icon className="h-4 w-4" />
+
                     <span className="hidden sm:inline">{item.label}</span>
-                    {item.badge && (
+
+                    {!!item.badge && (
                       <span
                         className={cn(
                           'absolute -top-2 -right-1 h-5 w-5 rounded-full text-xs font-bold flex items-center justify-center',

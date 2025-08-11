@@ -2,8 +2,11 @@ import { queryOptions } from '@tanstack/react-query';
 import { z } from 'zod';
 import { jsonApiInstance } from '../../../shared/api/api-instance';
 import { queryClient } from '@/shared/api/query-client';
+import type { Brand } from '@/shared/definitions';
 
 export const PAGE_LIMIT = 12;
+
+export type ProductIdentifier = Brand<number, 'PRODUCT_IDENTIFIER'>;
 
 export type PaginatedProductsResult = {
   products: ProductDto[];
@@ -21,7 +24,7 @@ export type ProductReview = {
 };
 
 export type ProductDto = {
-  id: number;
+  id: ProductIdentifier;
   title: string;
   description: string;
   category: string;

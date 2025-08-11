@@ -9,8 +9,9 @@ import {
   CardFooter,
 } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { useCart } from '@/modules/cart/hooks/useCart';
 import CartItem from './cart-item';
+
+import { useCart } from '@/modules/cart/hooks/useCart';
 
 function Cart() {
   const { cart, itemCount } = useCart();
