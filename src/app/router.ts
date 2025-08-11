@@ -53,10 +53,6 @@ export const router = createBrowserRouter([
                 }),
               });
 
-              queryClient.prefetchQuery({
-                ...productsApi.getProductCategoriesQueryOptions(),
-              });
-
               return null;
             },
           };
