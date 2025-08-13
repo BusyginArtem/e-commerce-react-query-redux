@@ -1,8 +1,8 @@
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 import { useQuery } from '@tanstack/react-query';
-import { productsApi } from '../api';
+import { productsApi, type ProductIdentifier } from '../api';
 
-export function useProduct({ id }: { id: number | undefined }) {
+export function useProduct({ id }: { id: ProductIdentifier | undefined }) {
   const { getCurrentPage } = useAppSearchParams();
 
   const currentPage = getCurrentPage();

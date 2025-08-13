@@ -9,13 +9,13 @@ import { Button } from './button';
 import { useAppDispatch } from '@/app/store';
 import { logoutThunk } from '@/modules/auth/thunks/logout';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { useCart } from '@/modules/cart/hooks/useCart';
+import { useCartData } from '@/modules/cart/hooks/useCart-rtk';
 
 function Template() {
   const { pathname } = useLocation();
 
   const { user } = useUserData();
-  const { itemCount } = useCart();
+  const { itemCount } = useCartData();
 
   const dispatch = useAppDispatch();
 

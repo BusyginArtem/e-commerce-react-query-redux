@@ -12,9 +12,13 @@ import { Button } from '@/shared/ui/button';
 import { Stars } from '@/shared/ui/stars';
 
 import type { ProductDto } from '@/modules/products/api';
+import { cartSlice } from '@/modules/cart/features/cart.slice';
+import { useAppDispatch } from '@/app/store';
 
 function ProductGridItem({ product }: { product: ProductDto }) {
   const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
 
   const handleClick = () => {
     navigate({
@@ -25,8 +29,8 @@ function ProductGridItem({ product }: { product: ProductDto }) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Add to cart logic here
-    console.log('Added to cart:', product.id);
+
+    dispatch(cartSlice.actions.addProductToCart({ productId: product.id }));
   };
 
   const handleWishlist = (e: React.MouseEvent) => {

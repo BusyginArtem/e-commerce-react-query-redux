@@ -2,12 +2,18 @@ import { queryOptions } from '@tanstack/react-query';
 import { z } from 'zod';
 import { jsonApiInstance } from '../../../shared/api/api-instance';
 import { queryClient } from '@/shared/api/query-client';
-import type { PaginatedProductsResult, ProductDto } from './models';
+import type {
+  PaginatedProductsResult,
+  ProductDto,
+  ProductIdentifier,
+} from './models';
 
 export const PAGE_LIMIT = 12;
 
 const ProductDtoSchema = z.object({
-  id: z.number(),
+  id: z
+    .number()
+    .transform((val): ProductIdentifier => val as ProductIdentifier),
   title: z.string(),
   description: z.string(),
   category: z.string(),
@@ -80,7 +86,7 @@ export const productsApi = {
     id,
     page,
   }: {
-    id: number | undefined;
+    id: ProductIdentifier | undefined;
     page: number;
   }) => {
     return queryOptions({
