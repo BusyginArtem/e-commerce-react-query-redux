@@ -13,7 +13,9 @@ import { Button } from '@/shared/ui/button';
 import { Stars } from '@/shared/ui/stars';
 
 import type { ProductDto } from '@/modules/products/api';
-import { useCart } from '@/modules/cart/hooks/useCart';
+
+import { useAppDispatch } from '@/app/store';
+import { cartSlice } from '@/modules/cart/features/cart.slice';
 
 const truncateText = (text: string, maxLength: number) => {
   if (text.length <= maxLength) return text;
@@ -23,7 +25,7 @@ const truncateText = (text: string, maxLength: number) => {
 function ProductItem({ product }: { product: ProductDto }) {
   const navigate = useNavigate();
 
-  const { addToCart } = useCart();
+  const dispatch = useAppDispatch();
 
   const handleClick = () => {
     navigate({
@@ -35,7 +37,7 @@ function ProductItem({ product }: { product: ProductDto }) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    addToCart({ productId: product.id });
+    dispatch(cartSlice.actions.addProductToCart({ productId: product.id }));
   };
 
   // TODO implement

@@ -5,8 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 // import { queryClient } from '@/shared/api/query-client';
-import { PAGE_LIMIT, productsApi } from '../api';
+import { productsApi } from '../api';
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
+import { PAGE_LIMIT } from '../api/client';
 
 export function useProducts() {
   const { getCurrentPage, getCurrentQuery, getCurrentCategory } =

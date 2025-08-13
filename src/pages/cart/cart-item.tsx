@@ -1,6 +1,5 @@
 import { Trash2, Minus, Plus } from 'lucide-react';
 
-import type { CartProductDto } from '@/modules/cart/api';
 import { Button } from '@/shared/ui/button';
 import {
   Card,
@@ -9,14 +8,17 @@ import {
   CardAction,
   CardContent,
 } from '@/shared/ui/card';
-import { useCart } from '@/modules/cart/hooks/useCart';
+
+import type { CartProductDto } from '@/modules/cart/api/models';
+import { useAppDispatch } from '@/app/store';
+import { cartSlice } from '@/modules/cart/features/cart.slice';
 
 type Props = {
   item: CartProductDto;
 };
 
 function CartItem({ item }: Props) {
-  const { updateQuantity, removeItem } = useCart();
+  const dispatch = useAppDispatch();
 
   const itemDiscount = item.discountedTotal
     ? item.total - item.discountedTotal
@@ -46,7 +48,13 @@ function CartItem({ item }: Props) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => removeItem(item.id)}
+              onClick={() =>
+                dispatch(
+                  cartSlice.actions.removeProductFromCart({
+                    productId: item.id,
+                  })
+                )
+              }
               className="text-red-500 hover:text-red-700 hover:bg-red-50"
             >
               <Trash2 className="h-4 w-4" />
@@ -82,7 +90,14 @@ function CartItem({ item }: Props) {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+              onClick={() =>
+                dispatch(
+                  cartSlice.actions.updateProductQuantity({
+                    productId: item.id,
+                    quantity: item.quantity - 1,
+                  })
+                )
+              }
               disabled={item.quantity <= 1}
               className="h-8 w-8"
             >
@@ -96,7 +111,14 @@ function CartItem({ item }: Props) {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+              onClick={() =>
+                dispatch(
+                  cartSlice.actions.updateProductQuantity({
+                    productId: item.id,
+                    quantity: item.quantity + 1,
+                  })
+                )
+              }
               className="h-8 w-8"
             >
               <Plus className="h-3 w-3" />

@@ -6,8 +6,8 @@ import PagePagination from '@/shared/ui/page-pagination';
 import { Button } from '@/shared/ui/button';
 
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
-import { PAGE_LIMIT } from '@/modules/products/api';
 import { useProducts } from '@/modules/products/hooks/useProducts';
+import { PAGE_LIMIT } from '@/modules/products/api/client';
 
 function ProductGridView() {
   const {

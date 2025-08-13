@@ -7,8 +7,8 @@ import { Button } from '@/shared/ui/button';
 
 import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 import { cn } from '@/shared/utils/style-helpers';
-import { PAGE_LIMIT } from '@/modules/products/api';
 import { useProducts } from '@/modules/products/hooks/useProducts';
+import { PAGE_LIMIT } from '@/modules/products/api/client';
 
 function ProductList() {
   const {
