@@ -6,16 +6,16 @@ import { ShoppingBag, Package, ShoppingCart, LogIn } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
 import { useUserData } from '../hooks/useUserData';
 import { Button } from './button';
-import { useAppDispatch } from '@/app/store';
+import { useAppDispatch, useAppSelector } from '@/app/store';
 import { logoutThunk } from '@/modules/auth/thunks/logout';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { useCartData } from '@/modules/cart/hooks/useCart-rtk';
+import { cartSlice } from '@/modules/cart/features/cart.slice';
 
 function Template() {
   const { pathname } = useLocation();
 
   const { user } = useUserData();
-  const { itemCount } = useCartData();
+  const itemCount = useAppSelector(cartSlice.selectors.totalProductItems);
 
   const dispatch = useAppDispatch();
 

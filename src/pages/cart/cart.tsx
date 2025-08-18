@@ -1,4 +1,5 @@
 import { ShoppingCart } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 import {
   Card,
@@ -12,10 +13,23 @@ import { Button } from '@/shared/ui/button';
 import CartItem from './cart-item';
 
 import { useCartData } from '@/modules/cart/hooks/useCart-rtk';
+import { useAppDispatch } from '@/app/store';
+import {
+  createOrderThunk,
+  useCreateOrderLoading,
+} from '@/modules/cart/thunks/createOrder';
 
 function Cart() {
   const { products, total, itemCount, isEmpty, discountedTotal } =
     useCartData();
+  const isCreateOrderLoading = useCreateOrderLoading();
+
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const handleContinueShopping = () => navigate('/products');
+
+  const handleCreateOrder = () => dispatch(createOrderThunk());
 
   if (isEmpty || !products) {
     return (
@@ -34,7 +48,9 @@ function Cart() {
             <CardDescription className="text-gray-500 mb-6">
               Add some products to your cart to get started
             </CardDescription>
-            <Button className="px-6 py-2">Continue Shopping</Button>
+            <Button className="px-6 py-2" onClick={handleContinueShopping}>
+              Continue Shopping
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -67,7 +83,7 @@ function Cart() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <Card className="sticky top-8">
+          <Card className="sticky top-20">
             <CardHeader>
               <CardTitle className="text-xl">Order Summary</CardTitle>
             </CardHeader>
@@ -120,10 +136,19 @@ function Cart() {
             </CardContent>
 
             <CardFooter className="flex flex-col gap-3">
-              <Button className="w-full" size="lg">
-                Proceed to Checkout
+              <Button
+                className="w-full cursor-pointer"
+                size="lg"
+                onClick={handleCreateOrder}
+                disabled={!itemCount || isCreateOrderLoading}
+              >
+                Create Order
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full cursor-pointer"
+                onClick={handleContinueShopping}
+              >
                 Continue Shopping
               </Button>
             </CardFooter>

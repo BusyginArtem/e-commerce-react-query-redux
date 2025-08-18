@@ -3,25 +3,17 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAppSelector } from '@/app/store';
 
 import { cartSlice } from '../features/cart.slice';
-import {
-  productsApi,
-  type ProductDto,
-  // type ProductIdentifier,
-} from '@/modules/products/api';
-
-// import { cartStorageHelpers } from '../features/helpers';
+import { productsApi, type ProductDto } from '@/modules/products/api';
 
 const generatePercentageOnQuantityAndPrice = (
   price: number,
   quantity: number
 ) => {
-  let discount = 5; // base 5% discount
+  let discount = 5;
 
-  // Add discount based on price tiers
   if (price > 50) discount += 5;
   if (price > 100) discount += 10;
 
-  // Add discount based on quantity tiers
   if (quantity > 3) discount += 5;
   if (quantity > 5) discount += 10;
   if (quantity > 7) discount += 15;
@@ -32,21 +24,30 @@ const generatePercentageOnQuantityAndPrice = (
 export function useCartData() {
   const queryClient = useQueryClient();
 
-  const query = queryClient.getQueryCache().find({
-    queryKey: [productsApi.baseKey, 'list'],
-    exact: false,
-  }) as { state: { data?: { products: ProductDto[] } } } | undefined;
+  const queryProducts = queryClient
+    .getQueryCache()
+    .findAll({
+      queryKey: [productsApi.baseKey, 'list'],
+      exact: false,
+    })
+    .reduce((acc, query) => {
+      const data = query.state.data as { products?: ProductDto[] } | undefined;
 
-  const cartStoredProducts = useAppSelector(cartSlice.selectors.selectProducts);
-  const itemCount = useAppSelector(cartSlice.selectors.selectTotalProducts);
-  const isEmpty = useAppSelector(cartSlice.selectors.selectIsEmpty);
+      return data && Array.isArray(data.products)
+        ? [...acc, ...data.products]
+        : acc;
+    }, [] as ProductDto[]);
+
+  const cartStoredProducts = useAppSelector(cartSlice.selectors.products);
+  const itemCount = useAppSelector(cartSlice.selectors.totalProductItems);
+  const isEmpty = useAppSelector(cartSlice.selectors.cartIsEmpty);
 
   const cartProducts = useMemo(
     () =>
-      query?.state.data?.products
+      queryProducts
         ? cartStoredProducts
             .map((cartStoredProduct) => {
-              const product = query?.state.data?.products.find(
+              const product = queryProducts.find(
                 (clientProduct) => clientProduct.id === cartStoredProduct.id
               );
 
@@ -73,13 +74,7 @@ export function useCartData() {
             })
             .filter((product) => !!product)
         : [],
-    [cartStoredProducts, query?.state.data?.products]
-  );
-
-  console.log(
-    '%c cartProducts',
-    'color: green; font-weight: bold;',
-    cartProducts
+    [cartStoredProducts, queryProducts]
   );
 
   const total = useMemo(() => {
@@ -96,30 +91,11 @@ export function useCartData() {
     }, 0);
   }, [cartProducts]);
 
-  // const removeProductFromCart = (productId: ProductIdentifier) => {
-  //   dispatch(cartSlice.actions.removeProductFromCart({ productId }));
-  //   // cartStorageHelpers.saveCartToStorage(
-  //   //   productIds.filter((id) => id !== productId)
-  //   // );
-  // };
-
-  // const addProductToCart = ({
-  //   productId,
-  // }: {
-  //   productId: ProductIdentifier;
-  // }) => {
-  //   dispatch(cartSlice.actions.addProductToCart({ productId }));
-  //   // cartStorageHelpers.saveCartToStorage([productId]);
-  // };
-
   return {
     products: cartProducts,
     total,
     itemCount,
     isEmpty,
     discountedTotal,
-    // addProductToCart,
-    // removeProductFromCart,
-    // updateProductQuantity: () => {},
   };
 }

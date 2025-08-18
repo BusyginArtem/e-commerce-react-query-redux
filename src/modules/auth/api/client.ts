@@ -23,6 +23,7 @@ export const usersApi = {
   getUserByIdQueryOptions: ({ userId }: { userId: UserIdentifier }) => {
     return queryOptions({
       queryKey: [usersApi.baseKey, 'byId', userId],
+      staleTime: 1000 * 60 * 60 * 24,
       queryFn: (meta) =>
         jsonApiInstance<UserDto>(`/users/${userId}`, {
           signal: meta.signal,

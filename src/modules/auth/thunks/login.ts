@@ -53,5 +53,5 @@ export const useLoginLoading = () => {
     select: (mutation) => mutation.state.status,
   });
 
-  return variables[0] === 'pending';
+  return variables.at(-1) === 'pending';
 };

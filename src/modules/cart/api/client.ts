@@ -48,6 +48,7 @@ export const cartApi = {
   getCartByUserIdQueryOptions: ({ userId }: { userId: UserIdentifier }) => {
     return queryOptions({
       queryKey: [cartApi.baseKey, 'byId', userId],
+      staleTime: 1000 * 60 * 60 * 24,
       queryFn: (meta) =>
         jsonApiInstance<PaginatedCartsResult>(`/carts/user/${userId}`, {
           signal: meta.signal,
@@ -81,23 +82,43 @@ export const cartApi = {
       method: 'PUT',
     }).then((data) => CartDtoSchema.parse(data));
   },
-  createCart: async ({
+  createOrder: async ({
     userId,
-    productId,
-    quantity,
+    cartProducts,
   }: {
     userId: UserIdentifier;
-    productId: ProductIdentifier;
-    quantity: number;
+    cartProducts: {
+      id: ProductIdentifier;
+      quantity: number;
+    }[];
   }) => {
     return jsonApiInstance('/carts/add', {
       json: {
         userId,
-        products: [{ id: productId, quantity }],
+        products: cartProducts,
       },
       method: 'POST',
     }).then((data) => CartDtoSchema.parse(data));
   },
+
+  // createCart: async ({
+  //   userId,
+  //   productId,
+  //   quantity,
+  // }: {
+  //   userId: UserIdentifier;
+  //   productId: ProductIdentifier;
+  //   quantity: number;
+  // }) => {
+  //   return jsonApiInstance('/carts/add', {
+  //     json: {
+  //       userId,
+  //       products: [{ id: productId, quantity }],
+  //     },
+  //     method: 'POST',
+  //   }).then((data) => CartDtoSchema.parse(data));
+  // },
+
   deleteCart: async ({ cartId }: { cartId: CartIdentifier }) => {
     return jsonApiInstance(`/carts/${cartId}`, {
       method: 'DELETE',

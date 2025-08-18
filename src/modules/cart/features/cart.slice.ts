@@ -15,9 +15,10 @@ export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   selectors: {
-    selectProducts: (state) => state.products,
-    selectTotalProducts: (state) => state.products.length,
-    selectIsEmpty: (state) => state.products.length === 0,
+    products: (state) => state.products,
+    totalProductItems: (state) =>
+      state.products.reduce((acc, product) => acc + product.quantity, 0),
+    cartIsEmpty: (state) => state.products.length === 0,
   },
   reducers: {
     addProductToCart: (
@@ -62,11 +63,8 @@ export const cartSlice = createSlice({
         return product;
       });
     },
-    // setTotal: (state, action: PayloadAction<{ total: number }>) => {
-    //   state.total = action.payload.total;
-    // },
-    // setDiscountedTotal: (state, action: PayloadAction<{ total: number }>) => {
-    //   state.discountedTotal = action.payload.total;
-    // },
+    clearCart: (state) => {
+      state.products = [];
+    },
   },
 }).injectInto(rootReducer);
