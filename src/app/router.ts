@@ -7,6 +7,7 @@ import {
   getCurrentUserId,
   prefetchUserData,
 } from '@/shared/utils/prefetch-utils';
+import type { Order, SortBy } from '@/modules/products/api/models';
 
 export const router = createBrowserRouter([
   {
@@ -44,12 +45,20 @@ export const router = createBrowserRouter([
               const query = url.searchParams.get('query')
                 ? String(url.searchParams.get('query'))
                 : '';
+              const sortBy = url.searchParams.get('sortBy')
+                ? (String(url.searchParams.get('sortBy')) as SortBy)
+                : undefined;
+              const order = url.searchParams.get('order')
+                ? (String(url.searchParams.get('order')) as Order)
+                : undefined;
 
               queryClient.prefetchQuery({
                 ...productsApi.getPaginatedProductListQueryOptions({
                   page,
                   category,
                   query,
+                  sortBy,
+                  order,
                 }),
               });
 
@@ -92,7 +101,7 @@ export const router = createBrowserRouter([
               if (!userId) {
                 throw redirect('/sign-in');
               }
-
+              console.log('/cart - prefetchUserData');
               await prefetchUserData();
 
               return null;

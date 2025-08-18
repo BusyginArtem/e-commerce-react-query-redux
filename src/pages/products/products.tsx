@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ProductList from './ui/product-list-view';
 import ProductGridView from './ui/product-grid-view';
 import { Button } from '@/shared/ui/button';
+import SortProducts from './ui/sort';
 
 function Products() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
@@ -52,17 +53,7 @@ function Products() {
             </div>
           </div>
 
-          {/* Additional Controls (future use) */}
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span>Sort by:</span>
-            <select className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option value="default">Default</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Rating</option>
-              <option value="newest">Newest</option>
-            </select>
-          </div>
+          <SortProducts />
         </div>
       </div>
 

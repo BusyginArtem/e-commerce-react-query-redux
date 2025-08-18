@@ -8,6 +8,7 @@ import type { ProductIdentifier } from '@/modules/products/api';
 export function useCart() {
   const userId = useAppSelector(authSlice.selectors.userId);
   const queryClient = useQueryClient();
+  console.log('useCart');
 
   // Query for cart data
   const { data, isLoading, isError, error } = useQuery({

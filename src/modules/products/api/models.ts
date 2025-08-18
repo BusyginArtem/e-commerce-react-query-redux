@@ -30,3 +30,7 @@ export type ProductDto = {
   thumbnail: string;
   reviews?: ProductReview[];
 };
+
+export type SortBy = 'price' | 'rating' | 'default';
+
+export type Order = 'asc' | 'desc';
