@@ -1,3 +1,4 @@
+import type { Order, SortBy } from '@/modules/products/api/models';
 import { useSearchParams } from 'react-router';
 
 export const useAppSearchParams = () => {
@@ -76,6 +77,42 @@ export const useAppSearchParams = () => {
     );
   };
 
+  const setSortByAndOrder = (sortBy: SortBy, order: Order) => {
+    const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      sortBy: _currentSortBy,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      order: __currentOrder,
+      ...restSearchParams
+    } = Object.fromEntries(searchParams.entries());
+
+    if (sortBy === 'default') {
+      setSearchParams(
+        {
+          ...restSearchParams,
+          page: String(1),
+        },
+        {
+          replace: true,
+        }
+      );
+
+      return;
+    }
+
+    setSearchParams(
+      {
+        ...restSearchParams,
+        page: String(1),
+        order,
+        sortBy,
+      },
+      {
+        replace: true,
+      }
+    );
+  };
+
   return {
     searchParams,
     setSearchParams,
@@ -83,6 +120,7 @@ export const useAppSearchParams = () => {
     setSearchQuery,
     setPage,
     setCategory,
+    setSortByAndOrder,
     getCurrentPage: () => {
       return searchParams.get('page') ? Number(searchParams.get('page')) : 1;
     },
@@ -91,6 +129,12 @@ export const useAppSearchParams = () => {
     },
     getCurrentQuery: () => {
       return searchParams.get('query') || '';
+    },
+    getCurrentSortBy: () => {
+      return (searchParams.get('sortBy') as SortBy) || '';
+    },
+    getCurrentOrder: () => {
+      return (searchParams.get('order') as Order) || '';
     },
     clearSearchParams: () => {
       setSearchParams({ page: String(1) }, { replace: true });

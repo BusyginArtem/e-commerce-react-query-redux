@@ -10,19 +10,28 @@ import { useAppSearchParams } from '@/shared/hooks/useAppSearchParams';
 import { PAGE_LIMIT } from '../api/client';
 
 export function useProducts() {
-  const { getCurrentPage, getCurrentQuery, getCurrentCategory } =
-    useAppSearchParams();
+  const {
+    getCurrentPage,
+    getCurrentQuery,
+    getCurrentCategory,
+    getCurrentSortBy,
+    getCurrentOrder,
+  } = useAppSearchParams();
   const queryClient = useQueryClient();
 
   const query = getCurrentQuery();
   const currentPage = getCurrentPage();
   const category = getCurrentCategory();
+  const sortBy = getCurrentSortBy();
+  const order = getCurrentOrder();
 
   const { isPending, isError, data, isPlaceholderData } = useQuery({
     ...productsApi.getPaginatedProductListQueryOptions({
       page: currentPage,
       category,
       query,
+      sortBy,
+      order,
     }),
     placeholderData: keepPreviousData,
   });
@@ -40,6 +49,8 @@ export function useProducts() {
           page: page + 1,
           category,
           query,
+          sortBy,
+          order,
         }),
         staleTime: 1000 * 60 * 5, // 5 minutes
       });

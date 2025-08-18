@@ -9,15 +9,21 @@ export const prefetchUserData = async () => {
   const userId = getCurrentUserId();
 
   if (userId) {
-    await Promise.all([
-      queryClient.prefetchQuery({
-        ...usersApi.getUserByIdQueryOptions({ userId }),
-      }),
+    const userData = queryClient.getQueryData(
+      usersApi.getUserByIdQueryOptions({ userId }).queryKey
+    );
 
-      queryClient.prefetchQuery({
-        ...cartApi.getCartByUserIdQueryOptions({ userId }),
-      }),
-    ]);
+    if (!userData) {
+      await Promise.all([
+        queryClient.prefetchQuery({
+          ...usersApi.getUserByIdQueryOptions({ userId }),
+        }),
+
+        queryClient.prefetchQuery({
+          ...cartApi.getCartByUserIdQueryOptions({ userId }),
+        }),
+      ]);
+    }
   }
 
   return userId;

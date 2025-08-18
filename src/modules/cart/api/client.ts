@@ -101,23 +101,23 @@ export const cartApi = {
     }).then((data) => CartDtoSchema.parse(data));
   },
 
-  // createCart: async ({
-  //   userId,
-  //   productId,
-  //   quantity,
-  // }: {
-  //   userId: UserIdentifier;
-  //   productId: ProductIdentifier;
-  //   quantity: number;
-  // }) => {
-  //   return jsonApiInstance('/carts/add', {
-  //     json: {
-  //       userId,
-  //       products: [{ id: productId, quantity }],
-  //     },
-  //     method: 'POST',
-  //   }).then((data) => CartDtoSchema.parse(data));
-  // },
+  createCart: async ({
+    userId,
+    productId,
+    quantity,
+  }: {
+    userId: UserIdentifier;
+    productId: ProductIdentifier;
+    quantity: number;
+  }) => {
+    return jsonApiInstance('/carts/add', {
+      json: {
+        userId,
+        products: [{ id: productId, quantity }],
+      },
+      method: 'POST',
+    }).then((data) => CartDtoSchema.parse(data));
+  },
 
   deleteCart: async ({ cartId }: { cartId: CartIdentifier }) => {
     return jsonApiInstance(`/carts/${cartId}`, {

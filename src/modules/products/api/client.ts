@@ -3,9 +3,11 @@ import { z } from 'zod';
 import { jsonApiInstance } from '../../../shared/api/api-instance';
 import { queryClient } from '@/shared/api/query-client';
 import type {
+  Order,
   PaginatedProductsResult,
   ProductDto,
   ProductIdentifier,
+  SortBy,
 } from './models';
 
 export const PAGE_LIMIT = 12;
@@ -50,11 +52,15 @@ export const productsApi = {
     page = 1,
     category = undefined,
     query = undefined,
+    sortBy = undefined,
+    order = undefined,
   }: {
     limit?: number;
     page?: number;
     category?: string;
     query?: string;
+    sortBy?: SortBy | undefined;
+    order?: Order | undefined;
   }) => {
     return queryOptions({
       staleTime: Infinity,
@@ -66,12 +72,16 @@ export const productsApi = {
         {
           category,
           query,
+          sortBy,
+          order,
         },
       ],
       queryFn: async (meta) => {
         const params = new URLSearchParams();
         params.set('limit', String(limit));
         params.set('skip', String((page - 1) * limit));
+        if (sortBy) params.set('sortBy', sortBy);
+        if (order) params.set('order', order);
         if (query && !category) params.set('q', query);
 
         const url = `/products${category && !query ? `/category/${category}` : ''}${query && !category ? `/search` : ''}?${params.toString()}`;

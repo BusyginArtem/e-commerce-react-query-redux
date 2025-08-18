@@ -88,7 +88,7 @@ function Filters() {
                 : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
             )}
           >
-            <div className="flex items-center justify-between ">
+            <div className="flex items-center justify-between w-full">
               <span>All Products</span>
               <div className="w-2 h-2 bg-current rounded-full opacity-60"></div>
             </div>
