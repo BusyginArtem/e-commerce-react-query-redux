@@ -2,7 +2,7 @@ import { createBrowserRouter, redirect } from 'react-router';
 
 import Template from '../shared/ui/template';
 import { queryClient } from '@/shared/api/query-client';
-import { productsApi } from '@/modules/products/api';
+import { productsApi, type ProductIdentifier } from '@/modules/products/api';
 import {
   getCurrentUserId,
   prefetchUserData,
@@ -70,7 +70,7 @@ export const router = createBrowserRouter([
 
               queryClient.prefetchQuery({
                 ...productsApi.getProductByIdQueryOptions({
-                  id: Number(params.id),
+                  id: Number(params.id) as ProductIdentifier,
                   page,
                 }),
               });
@@ -87,15 +87,12 @@ export const router = createBrowserRouter([
           return {
             Component: module.default,
             loader: async () => {
-              // Check if user is authenticated
               const userId = getCurrentUserId();
 
               if (!userId) {
-                // Redirect to sign-in if not authenticated
                 throw redirect('/sign-in');
               }
 
-              // Prefetch both user and cart data
               await prefetchUserData();
 
               return null;

@@ -8,6 +8,7 @@ import { queryClient } from '../shared/api/query-client';
 import { ErrorBoundary } from './error-boundary';
 
 import { store } from './store';
+import { Toaster } from '@/shared/ui/sonner';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Provider store={store}>
         <ErrorBoundary>
           <RouterProvider router={router} />
+          <Toaster />
         </ErrorBoundary>
       </Provider>
       <ReactQueryDevtools initialIsOpen={false} />
